@@ -1,50 +1,47 @@
-# Welcome to your Expo app 👋
+# Радио ЭФИР 1941-1945 (Expo CLI MVP)
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+MVP Android-приложения с офлайн-аудио, дискретной настройкой частоты и фоновым воспроизведением через `react-native-track-player`.
 
-## Get started
+## Запуск разработки
 
-1. Install dependencies
-
-   ```bash
-   npm install
-   ```
-
-2. Start the app
-
-   ```bash
-   npx expo start
-   ```
-
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
+1. Установить зависимости:
 
 ```bash
-npm run reset-project
+npm install
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+2. Сгенерировать Android нативную часть (первый раз или после изменения `app.json`):
 
-## Learn more
+```bash
+npm run prebuild:android
+```
 
-To learn more about developing your project with Expo, look at the following resources:
+3. Запустить development build:
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+```bash
+npm run android
+```
 
-## Join the community
+Важно: проект использует `react-native-track-player`, поэтому требуется Development Build, а не Expo Go.
 
-Join our community of developers creating universal apps.
+## Контент и структура данных
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+- Конфигурация станций: `src/assets/stations.json`
+- Маппинг и валидация аудио-id: `src/assets/audioMap.ts`
+- Все `file` в `stations.json` должны соответствовать именам ресурсов в `android/app/src/main/res/raw`.
+- Белый шум: ресурс `static` (`static.mp3`).
+
+## Что реализовано в MVP
+
+- Дискретный выбор частоты с пустыми частотами (шум).
+- Выбор года 1941-1945.
+- Переключение с коротким шумом перед новой станцией.
+- Цикличное воспроизведение очереди станции.
+- Фоновое воспроизведение с remote-кнопками (Play/Pause/Stop).
+- Сохранение и восстановление частоты и года через AsyncStorage.
+
+## Release-сборка
+
+- Internal dev build: `npm run build:android:dev`
+- Internal preview APK/AAB: `npm run build:android:preview`
+- Production AAB: `npm run build:android:release`
