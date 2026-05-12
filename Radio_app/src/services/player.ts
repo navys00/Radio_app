@@ -7,13 +7,24 @@ import TrackPlayer, {
   type Track,
 } from 'react-native-track-player';
 import { Platform } from 'react-native';
-import { getAllTracksForStation, getStationByFrequency, getStationById } from '@/src/data/radioData';
+import {
+  clampFrequencyKhz,
+  getAllTracksForStation,
+  getStationById,
+  resolveStationForFrequency,
+} from '@/src/data/radioData';
 import { resolveAndroidRawResource, STATIC_NOISE_FILE, validateAudioMap } from '@/src/assets/audioMap';
 
 const SWITCH_NOISE_MS = 800;
 let initialized = false;
 let switchCounter = 0;
+let lastPlaybackTargetKey: string | null = null;
 const isTrackPlayerSupported = Platform.OS === 'android';
+
+function playbackTargetKey(frequencyKhz: number): string {
+  const s = resolveStationForFrequency(frequencyKhz);
+  return s?.id ?? '__noise__';
+}
 
 function delay(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -52,6 +63,12 @@ export async function setupPlayer(): Promise<void> {
   initialized = true;
 }
 
+export async function setPlaybackVolume(volume01: number): Promise<void> {
+  if (!isTrackPlayerSupported) return;
+  const v = Math.max(0, Math.min(1, volume01));
+  await TrackPlayer.setVolume(v);
+}
+
 export async function playStation(stationId: string): Promise<void> {
   if (!isTrackPlayerSupported) return;
   const targetStation = getStationById(stationId);
@@ -71,15 +88,16 @@ export async function playStation(stationId: string): Promise<void> {
 
 export async function playStationByFrequency(frequency: number): Promise<void> {
   if (!isTrackPlayerSupported) return;
-  const station = getStationByFrequency(frequency);
+  const freq = clampFrequencyKhz(frequency);
+  const station = resolveStationForFrequency(freq);
   if (!station) {
-    await playNoise('Пусто', `${frequency} кГц`);
+    await playNoise('Пусто', `${freq} кГц`);
     return;
   }
 
   const tracks = getAllTracksForStation(station);
   if (tracks.length === 0) {
-    await playNoise('Пусто', `${frequency} кГц`);
+    await playNoise('Пусто', `${freq} кГц`);
     return;
   }
 
@@ -103,12 +121,19 @@ export async function playNoise(city = 'Пусто', frequencyText = ''): Promis
 
 export async function switchFrequency(frequency: number): Promise<void> {
   if (!isTrackPlayerSupported) return;
+  const freq = clampFrequencyKhz(frequency);
+  const nextKey = playbackTargetKey(freq);
+  if (lastPlaybackTargetKey !== null && nextKey === lastPlaybackTargetKey) {
+    return;
+  }
+  lastPlaybackTargetKey = nextKey;
+
   const currentSwitch = ++switchCounter;
   await TrackPlayer.stop();
-  await playNoise('Пусто', `${frequency} кГц`);
+  await playNoise('Пусто', `${freq} кГц`);
   await delay(SWITCH_NOISE_MS);
   if (currentSwitch !== switchCounter) return;
-  await playStationByFrequency(frequency);
+  await playStationByFrequency(freq);
 }
 
 export async function togglePlayPause(): Promise<void> {

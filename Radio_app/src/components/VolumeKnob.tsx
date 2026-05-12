@@ -2,62 +2,54 @@ import { useCallback, useEffect } from 'react';
 import { Platform, StyleSheet, View } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, { runOnJS, SharedValue, useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
-import {
-  clampFrequencyKhz,
-  FREQUENCY_RANGE,
-} from '@/src/data/radioData';
 
-/** Высота жеста (px), соответствующая полному диапазону частот */
-const DRAG_PX_FOR_FULL_RANGE = 240;
-const TURNS_VISUAL = 2.25;
+const DRAG_PX_FOR_FULL_RANGE = 220;
 
 type Props = {
-  displayFrequency: SharedValue<number>;
-  lockedFrequency: number;
+  displayVolume: SharedValue<number>;
+  lockedVolume: number;
   size: number;
-  onCommit: (f: number) => void;
+  onCommit: (volume0to100: number) => void;
   onInteractionStart?: () => void;
 };
 
-export function TuningKnob({ displayFrequency, lockedFrequency, size, onCommit, onInteractionStart }: Props) {
-  const startFreqOnPan = useSharedValue(0);
-  const span = FREQUENCY_RANGE.max - FREQUENCY_RANGE.min;
+export function VolumeKnob({ displayVolume, lockedVolume, size, onCommit, onInteractionStart }: Props) {
+  const startVol = useSharedValue(0);
   const r = size / 2;
 
-  const applySnapFromWorklet = useCallback(
-    (rawFreq: number) => {
-      const snapped = clampFrequencyKhz(rawFreq);
-      displayFrequency.value = snapped;
-      onCommit(snapped);
+  const applyFromWorklet = useCallback(
+    (v: number) => {
+      const clamped = Math.max(0, Math.min(100, Math.round(v)));
+      displayVolume.value = clamped;
+      onCommit(clamped);
     },
-    [displayFrequency, onCommit],
+    [displayVolume, onCommit],
   );
 
   useEffect(() => {
-    displayFrequency.value = lockedFrequency;
-  }, [lockedFrequency, displayFrequency]);
+    displayVolume.value = lockedVolume;
+  }, [lockedVolume, displayVolume]);
 
   const pan = Gesture.Pan()
     .onBegin(() => {
       if (onInteractionStart) {
         runOnJS(onInteractionStart)();
       }
-      startFreqOnPan.value = displayFrequency.value;
+      startVol.value = displayVolume.value;
     })
     .onUpdate((e) => {
-      const deltaFreq = (-e.translationY / DRAG_PX_FOR_FULL_RANGE) * span;
-      let f = startFreqOnPan.value + deltaFreq;
-      f = Math.max(FREQUENCY_RANGE.min, Math.min(FREQUENCY_RANGE.max, f));
-      displayFrequency.value = f;
+      const delta = (-e.translationY / DRAG_PX_FOR_FULL_RANGE) * 100;
+      let v = startVol.value + delta;
+      v = Math.max(0, Math.min(100, v));
+      displayVolume.value = v;
     })
     .onEnd(() => {
-      runOnJS(applySnapFromWorklet)(displayFrequency.value);
+      runOnJS(applyFromWorklet)(displayVolume.value);
     });
 
   const knobSpin = useAnimatedStyle(() => {
-    const f = displayFrequency.value;
-    const t = (f - FREQUENCY_RANGE.min) / Math.max(1e-6, span);
-    const deg = t * TURNS_VISUAL * 360;
+    const t = displayVolume.value / 100;
+    const deg = t * 270 - 135;
     return {
       transform: [{ rotate: `${deg}deg` }],
     };
@@ -66,11 +58,11 @@ export function TuningKnob({ displayFrequency, lockedFrequency, size, onCommit, 
   const shadowStyle = Platform.select({
     ios: {
       shadowColor: '#000',
-      shadowOffset: { width: 0, height: 4 },
-      shadowOpacity: 0.45,
-      shadowRadius: 5,
+      shadowOffset: { width: 0, height: 3 },
+      shadowOpacity: 0.4,
+      shadowRadius: 4,
     },
-    default: { elevation: 8 },
+    default: { elevation: 6 },
   });
 
   return (
@@ -78,7 +70,7 @@ export function TuningKnob({ displayFrequency, lockedFrequency, size, onCommit, 
       <Animated.View
         style={[styles.hit, { width: size, height: size }]}
         accessibilityRole="adjustable"
-        accessibilityLabel="Настройка частоты"
+        accessibilityLabel="Громкость"
       >
         <Animated.View style={[styles.knobOuter, { width: size, height: size, borderRadius: r }, shadowStyle, knobSpin]}>
           <View style={[styles.knobRim, { width: size - 6, height: size - 6, borderRadius: r - 3 }]} />
@@ -99,29 +91,29 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 3,
-    borderColor: '#9a7a3a',
-    backgroundColor: '#2a1a0e',
+    borderColor: '#7a6a4a',
+    backgroundColor: '#1e1810',
   },
   knobRim: {
     position: 'absolute',
     borderWidth: 2,
-    borderColor: 'rgba(212, 175, 95, 0.55)',
+    borderColor: 'rgba(160, 150, 120, 0.5)',
     backgroundColor: 'transparent',
   },
   knobFace: {
     position: 'absolute',
-    backgroundColor: '#3d2818',
+    backgroundColor: '#2a2620',
     borderWidth: 1,
-    borderColor: 'rgba(60, 40, 25, 0.9)',
+    borderColor: 'rgba(50, 48, 44, 0.95)',
   },
   marker: {
     position: 'absolute',
-    top: 10,
-    width: 4,
-    height: 14,
+    top: 9,
+    width: 3,
+    height: 12,
     borderRadius: 2,
-    backgroundColor: '#e8c56a',
+    backgroundColor: '#c9b896',
     borderWidth: 1,
-    borderColor: 'rgba(90, 60, 30, 0.8)',
+    borderColor: 'rgba(40, 38, 35, 0.85)',
   },
 });

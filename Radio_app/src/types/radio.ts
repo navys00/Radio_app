@@ -1,6 +1,9 @@
 /** Год в данных станции — только для группировки треков в JSON; в UI не выбирается. */
 export type RadioYear = '1941' | '1942' | '1943' | '1944' | '1945';
 
+/** Уровень громкости UI / хранилища: 0–100. */
+export type VolumeLevel = number;
+
 export type StationTrack = {
   file: string;
   title: string;
@@ -16,5 +19,4 @@ export type Station = {
 
 export type StationsConfig = {
   stations: Station[];
-  emptyFrequencies: number[];
 };

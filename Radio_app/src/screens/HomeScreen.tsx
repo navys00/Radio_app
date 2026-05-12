@@ -1,36 +1,60 @@
 import { useCallback, useEffect, useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { useSharedValue } from 'react-native-reanimated';
-import { FrequencyScale } from '@/src/components/FrequencyScale';
+import { DialGeometry, FrequencyScale } from '@/src/components/FrequencyScale';
 import { TubeLamp } from '@/src/components/TubeLamp';
 import { TuningKnob } from '@/src/components/TuningKnob';
 import { TuningPointer } from '@/src/components/TuningPointer';
 import { VintageRadioBody } from '@/src/components/VintageRadioBody';
+import { VolumeKnob } from '@/src/components/VolumeKnob';
 import { useRadio } from '@/src/context/RadioContext';
 import { FREQUENCY_RANGE } from '@/src/data/radioData';
 
 const POINTER_W = 28;
-const KNOB_SIZE = 132;
+const TUNE_KNOB = 128;
+const VOL_KNOB = 108;
 
 export function HomeScreen() {
-  const { frequency, setFrequency } = useRadio();
+  const { frequency, volume, setFrequency, setVolume } = useRadio();
   const displayFreq = useSharedValue(frequency);
-  const [trackW, setTrackW] = useState(0);
+  const displayVol = useSharedValue(volume);
+  const [dialGeo, setDialGeometry] = useState<DialGeometry | null>(null);
   const [warmupDone, setWarmupDone] = useState(false);
-  const [hintVisible, setHintVisible] = useState(true);
+
+  const onDialGeometry = useCallback((g: DialGeometry) => {
+    setDialGeometry((prev) => {
+      if (
+        prev &&
+        prev.trackWidth === g.trackWidth &&
+        Math.abs(prev.pointerLiftFromBottom - g.pointerLiftFromBottom) < 0.5
+      ) {
+        return prev;
+      }
+      return g;
+    });
+  }, []);
 
   useEffect(() => {
     displayFreq.value = frequency;
   }, [frequency, displayFreq]);
 
-  const onCommit = useCallback(
+  useEffect(() => {
+    displayVol.value = volume;
+  }, [volume, displayVol]);
+
+  const onFreqCommit = useCallback(
     (f: number) => {
       void setFrequency(f);
     },
     [setFrequency],
   );
 
-  const dismissHint = useCallback(() => setHintVisible(false), []);
+  const onVolCommit = useCallback(
+    (v: number) => {
+      void setVolume(v);
+    },
+    [setVolume],
+  );
 
   return (
     <VintageRadioBody warmupComplete={warmupDone} onWarmupComplete={() => setWarmupDone(true)}>
@@ -40,16 +64,16 @@ export function HomeScreen() {
           <TubeLamp warmupComplete={warmupDone} />
         </View>
 
-        <View
-          style={styles.scaleWrap}
-          onLayout={(e) => setTrackW(e.nativeEvent.layout.width)}
-        >
-          <FrequencyScale />
-          {trackW > 0 ? (
-            <View style={styles.pointerOverlay} pointerEvents="none">
+        <View style={styles.scaleWrap}>
+          <FrequencyScale onDialGeometry={onDialGeometry} />
+          {dialGeo && dialGeo.trackWidth > 0 ? (
+            <View
+              style={[styles.pointerOverlay, { paddingBottom: dialGeo.pointerLiftFromBottom }]}
+              pointerEvents="none"
+            >
               <TuningPointer
                 displayFrequency={displayFreq}
-                trackWidth={trackW}
+                trackWidth={dialGeo.trackWidth}
                 minF={FREQUENCY_RANGE.min}
                 maxF={FREQUENCY_RANGE.max}
                 pointerWidth={POINTER_W}
@@ -62,17 +86,17 @@ export function HomeScreen() {
           <TuningKnob
             displayFrequency={displayFreq}
             lockedFrequency={frequency}
-            size={KNOB_SIZE}
-            onCommit={onCommit}
-            onInteractionStart={dismissHint}
+            size={TUNE_KNOB}
+            onCommit={onFreqCommit}
+          />
+          <View style={styles.knobGap} />
+          <VolumeKnob
+            displayVolume={displayVol}
+            lockedVolume={volume}
+            size={VOL_KNOB}
+            onCommit={onVolCommit}
           />
         </View>
-
-        {hintVisible ? (
-          <View style={styles.hint} pointerEvents="none">
-            <Text style={styles.hintText}>Вращайте ручку настройки</Text>
-          </View>
-        ) : null}
       </View>
     </VintageRadioBody>
   );
@@ -92,8 +116,8 @@ const styles = StyleSheet.create({
   scaleWrap: {
     position: 'relative',
     marginTop: 20,
-    paddingHorizontal: 14,
-    minHeight: 100,
+    paddingHorizontal: 12,
+    minHeight: 300,
   },
   pointerOverlay: {
     ...StyleSheet.absoluteFillObject,
@@ -101,23 +125,11 @@ const styles = StyleSheet.create({
   },
   knobRow: {
     flex: 1,
+    flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    paddingBottom: 36,
+    paddingBottom: 32,
+    paddingHorizontal: 12,
   },
-  hint: {
-    position: 'absolute',
-    left: 0,
-    right: 0,
-    bottom: 24,
-    alignItems: 'center',
-  },
-  hintText: {
-    color: 'rgba(255, 220, 180, 0.92)',
-    fontSize: 15,
-    letterSpacing: 0.4,
-    textShadowColor: 'rgba(0,0,0,0.85)',
-    textShadowOffset: { width: 0, height: 1 },
-    textShadowRadius: 4,
-  },
+  knobGap: { width: 28 },
 });
