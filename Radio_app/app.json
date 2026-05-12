@@ -1,11 +1,11 @@
 {
   "expo": {
-    "name": "MyFirstApp",
-    "slug": "MyFirstApp",
+    "name": "Radio_app",
+    "slug": "Radio_app",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "myfirstapp",
+    "scheme": "radioapp",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
