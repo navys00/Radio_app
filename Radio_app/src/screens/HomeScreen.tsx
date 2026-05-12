@@ -1,42 +1,123 @@
-import { Pressable, SafeAreaView, StyleSheet, Text, View } from 'react-native';
-import { FrequencySlider } from '@/src/components/FrequencySlider';
-import { StationInfo } from '@/src/components/StationInfo';
-import { YearSelector } from '@/src/components/YearSelector';
+import { useCallback, useEffect, useState } from 'react';
+import { StyleSheet, Text, View } from 'react-native';
+import { useSharedValue } from 'react-native-reanimated';
+import { FrequencyScale } from '@/src/components/FrequencyScale';
+import { TubeLamp } from '@/src/components/TubeLamp';
+import { TuningKnob } from '@/src/components/TuningKnob';
+import { TuningPointer } from '@/src/components/TuningPointer';
+import { VintageRadioBody } from '@/src/components/VintageRadioBody';
 import { useRadio } from '@/src/context/RadioContext';
-import { allFrequencies, YEARS } from '@/src/data/radioData';
+import { FREQUENCY_RANGE } from '@/src/data/radioData';
+
+const POINTER_W = 28;
+const KNOB_SIZE = 132;
 
 export function HomeScreen() {
-  const { frequency, year, station, isPlaying, setFrequency, setYear, onTogglePlay, onStop } = useRadio();
+  const { frequency, setFrequency } = useRadio();
+  const displayFreq = useSharedValue(frequency);
+  const [trackW, setTrackW] = useState(0);
+  const [warmupDone, setWarmupDone] = useState(false);
+  const [hintVisible, setHintVisible] = useState(true);
+
+  useEffect(() => {
+    displayFreq.value = frequency;
+  }, [frequency, displayFreq]);
+
+  const onCommit = useCallback(
+    (f: number) => {
+      void setFrequency(f);
+    },
+    [setFrequency],
+  );
+
+  const dismissHint = useCallback(() => setHintVisible(false), []);
 
   return (
-    <SafeAreaView style={styles.root}>
-      <View style={styles.container}>
-        <StationInfo frequency={frequency} stationName={station?.city ?? 'Пусто'} year={year} />
-        <FrequencySlider frequencies={allFrequencies} frequency={frequency} onChange={(value) => void setFrequency(value)} />
-        <YearSelector years={YEARS} selectedYear={year} onSelectYear={(value) => void setYear(value)} />
-        <View style={styles.controls}>
-          <Pressable style={styles.button} onPress={() => void onTogglePlay()}>
-            <Text style={styles.buttonText}>{isPlaying ? 'Pause' : 'Play'}</Text>
-          </Pressable>
-          <Pressable style={styles.button} onPress={() => void onStop()}>
-            <Text style={styles.buttonText}>Stop</Text>
-          </Pressable>
+    <VintageRadioBody warmupComplete={warmupDone} onWarmupComplete={() => setWarmupDone(true)}>
+      <View style={styles.root}>
+        <View style={styles.topRow}>
+          <View style={styles.topSpacer} />
+          <TubeLamp warmupComplete={warmupDone} />
         </View>
+
+        <View
+          style={styles.scaleWrap}
+          onLayout={(e) => setTrackW(e.nativeEvent.layout.width)}
+        >
+          <FrequencyScale />
+          {trackW > 0 ? (
+            <View style={styles.pointerOverlay} pointerEvents="none">
+              <TuningPointer
+                displayFrequency={displayFreq}
+                trackWidth={trackW}
+                minF={FREQUENCY_RANGE.min}
+                maxF={FREQUENCY_RANGE.max}
+                pointerWidth={POINTER_W}
+              />
+            </View>
+          ) : null}
+        </View>
+
+        <View style={styles.knobRow}>
+          <TuningKnob
+            displayFrequency={displayFreq}
+            lockedFrequency={frequency}
+            size={KNOB_SIZE}
+            onCommit={onCommit}
+            onInteractionStart={dismissHint}
+          />
+        </View>
+
+        {hintVisible ? (
+          <View style={styles.hint} pointerEvents="none">
+            <Text style={styles.hintText}>Вращайте ручку настройки</Text>
+          </View>
+        ) : null}
       </View>
-    </SafeAreaView>
+    </VintageRadioBody>
   );
 }
 
 const styles = StyleSheet.create({
-  root: { flex: 1, backgroundColor: '#1b140d' },
-  container: { flex: 1, paddingHorizontal: 18, paddingVertical: 24, gap: 20 },
-  controls: { flexDirection: 'row', gap: 12 },
-  button: {
-    borderWidth: 1,
-    borderColor: '#8a734d',
-    borderRadius: 10,
-    paddingHorizontal: 16,
-    paddingVertical: 10,
+  root: {
+    flex: 1,
+    paddingTop: 12,
   },
-  buttonText: { color: '#f7ead5', fontWeight: '600' },
+  topRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    paddingHorizontal: 16,
+  },
+  topSpacer: { flex: 1 },
+  scaleWrap: {
+    position: 'relative',
+    marginTop: 20,
+    paddingHorizontal: 14,
+    minHeight: 100,
+  },
+  pointerOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    justifyContent: 'flex-end',
+  },
+  knobRow: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingBottom: 36,
+  },
+  hint: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: 24,
+    alignItems: 'center',
+  },
+  hintText: {
+    color: 'rgba(255, 220, 180, 0.92)',
+    fontSize: 15,
+    letterSpacing: 0.4,
+    textShadowColor: 'rgba(0,0,0,0.85)',
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 4,
+  },
 });

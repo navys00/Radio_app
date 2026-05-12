@@ -26,6 +26,12 @@ todos:
 isProject: false
 ---
 
+## Статус (винтажный интерфейс, 2026)
+
+- Главный экран переведён на ламповый UI: `VintageRadioBody`, `FrequencyScale`, `TuningPointer`, `TuningKnob`, `TubeLamp`; удалены `FrequencySlider`, `YearSelector`, `StationInfo`.
+- Персистентность и контекст: только `frequency`; воспроизведение станции — объединённая очередь всех лет из `stations.json`.
+- Корневой layout: `GestureHandlerRootView`; UI радио — вёрстка без PNG-ассетов.
+
 # План реализации MVP «ЭФИР 1941–1945» на Expo CLI
 
 ## Технический подход

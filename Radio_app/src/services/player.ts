@@ -7,11 +7,10 @@ import TrackPlayer, {
   type Track,
 } from 'react-native-track-player';
 import { Platform } from 'react-native';
-import { getStationByFrequency, getStationById } from '@/src/data/radioData';
+import { getAllTracksForStation, getStationByFrequency, getStationById } from '@/src/data/radioData';
 import { resolveAndroidRawResource, STATIC_NOISE_FILE, validateAudioMap } from '@/src/assets/audioMap';
-import type { RadioYear } from '@/src/types/radio';
 
-const SWITCH_NOISE_MS = 700;
+const SWITCH_NOISE_MS = 800;
 let initialized = false;
 let switchCounter = 0;
 const isTrackPlayerSupported = Platform.OS === 'android';
@@ -53,12 +52,12 @@ export async function setupPlayer(): Promise<void> {
   initialized = true;
 }
 
-export async function playStation(stationId: string, year: RadioYear): Promise<void> {
+export async function playStation(stationId: string): Promise<void> {
   if (!isTrackPlayerSupported) return;
   const targetStation = getStationById(stationId);
   if (!targetStation) return;
 
-  const tracks = targetStation.years[year] ?? [];
+  const tracks = getAllTracksForStation(targetStation);
   if (tracks.length === 0) {
     await playNoise('Пусто', 'Шум');
     return;
@@ -70,7 +69,7 @@ export async function playStation(stationId: string, year: RadioYear): Promise<v
   await TrackPlayer.play();
 }
 
-export async function playStationByFrequency(frequency: number, year: RadioYear): Promise<void> {
+export async function playStationByFrequency(frequency: number): Promise<void> {
   if (!isTrackPlayerSupported) return;
   const station = getStationByFrequency(frequency);
   if (!station) {
@@ -78,7 +77,7 @@ export async function playStationByFrequency(frequency: number, year: RadioYear)
     return;
   }
 
-  const tracks = station.years[year] ?? [];
+  const tracks = getAllTracksForStation(station);
   if (tracks.length === 0) {
     await playNoise('Пусто', `${frequency} кГц`);
     return;
@@ -102,14 +101,14 @@ export async function playNoise(city = 'Пусто', frequencyText = ''): Promis
   await TrackPlayer.play();
 }
 
-export async function switchFrequency(frequency: number, year: RadioYear): Promise<void> {
+export async function switchFrequency(frequency: number): Promise<void> {
   if (!isTrackPlayerSupported) return;
   const currentSwitch = ++switchCounter;
   await TrackPlayer.stop();
   await playNoise('Пусто', `${frequency} кГц`);
   await delay(SWITCH_NOISE_MS);
   if (currentSwitch !== switchCounter) return;
-  await playStationByFrequency(frequency, year);
+  await playStationByFrequency(frequency);
 }
 
 export async function togglePlayPause(): Promise<void> {

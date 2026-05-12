@@ -1,3 +1,4 @@
+/** Год в данных станции — только для группировки треков в JSON; в UI не выбирается. */
 export type RadioYear = '1941' | '1942' | '1943' | '1944' | '1945';
 
 export type StationTrack = {
@@ -9,6 +10,7 @@ export type Station = {
   id: string;
   city: string;
   frequency: number;
+  /** Треки по годам в источнике; воспроизведение объединяет все годы подряд. */
   years: Record<RadioYear, StationTrack[]>;
 };
 
