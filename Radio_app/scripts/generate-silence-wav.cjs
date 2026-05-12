@@ -1,0 +1,33 @@
+const fs = require('node:fs');
+const path = require('node:path');
+
+const outDir = path.join(__dirname, '..', 'assets', 'audio');
+const outPath = path.join(outDir, 'silence.wav');
+
+const sampleRate = 8000;
+const durationSec = 0.25;
+const numChannels = 1;
+const bitsPerSample = 16;
+const numSamples = Math.floor(sampleRate * durationSec);
+const blockAlign = (numChannels * bitsPerSample) / 8;
+const byteRate = sampleRate * blockAlign;
+const dataSize = numSamples * blockAlign;
+const buffer = Buffer.alloc(44 + dataSize);
+
+buffer.write('RIFF', 0);
+buffer.writeUInt32LE(36 + dataSize, 4);
+buffer.write('WAVE', 8);
+buffer.write('fmt ', 12);
+buffer.writeUInt32LE(16, 16);
+buffer.writeUInt16LE(1, 20);
+buffer.writeUInt16LE(numChannels, 22);
+buffer.writeUInt32LE(sampleRate, 24);
+buffer.writeUInt32LE(byteRate, 28);
+buffer.writeUInt16LE(blockAlign, 32);
+buffer.writeUInt16LE(bitsPerSample, 34);
+buffer.write('data', 36);
+buffer.writeUInt32LE(dataSize, 40);
+
+fs.mkdirSync(outDir, { recursive: true });
+fs.writeFileSync(outPath, buffer);
+console.log('Wrote', outPath);

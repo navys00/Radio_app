@@ -1,7 +1,8 @@
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { State, usePlaybackState } from 'react-native-track-player';
-import { clampFrequencyKhz, FREQUENCY_RANGE } from '@/src/data/radioData';
-import { loadRadioState, saveFrequency, saveVolume } from '@/src/utils/storage';
+import { clampFrequencyKhz, DEFAULT_RADIO_YEAR, FREQUENCY_RANGE } from '@/src/data/radioData';
+import type { RadioYear, VolumeLevel } from '@/src/types/radio';
+import { loadRadioState, saveFrequency, saveRadioYear, saveVolume } from '@/src/utils/storage';
 import {
   setupPlayer,
   setPlaybackVolume,
@@ -9,14 +10,15 @@ import {
   togglePlayPause,
   stopPlayback,
 } from '@/src/services/player';
-import type { VolumeLevel } from '@/src/types/radio';
 
 type RadioContextValue = {
   frequency: number;
   volume: VolumeLevel;
+  year: RadioYear;
   isPlaying: boolean;
   setFrequency: (value: number) => Promise<void>;
   setVolume: (value: VolumeLevel) => Promise<void>;
+  setYear: (value: RadioYear) => Promise<void>;
   onTogglePlay: () => Promise<void>;
   onStop: () => Promise<void>;
 };
@@ -29,6 +31,7 @@ const RadioContext = createContext<RadioContextValue | null>(null);
 export function RadioProvider({ children }: { children: React.ReactNode }) {
   const [frequency, setFrequencyState] = useState<number>(DEFAULT_FREQUENCY);
   const [volume, setVolumeState] = useState<VolumeLevel>(DEFAULT_VOLUME);
+  const [year, setYearState] = useState<RadioYear>(DEFAULT_RADIO_YEAR);
   const [isPlaying, setIsPlaying] = useState(true);
   const [isHydrated, setIsHydrated] = useState(false);
   const playback = usePlaybackState();
@@ -43,16 +46,18 @@ export function RadioProvider({ children }: { children: React.ReactNode }) {
     let mounted = true;
     (async () => {
       await setupPlayer();
-      const restored = await loadRadioState(DEFAULT_FREQUENCY, DEFAULT_VOLUME);
+      const restored = await loadRadioState(DEFAULT_FREQUENCY, DEFAULT_VOLUME, DEFAULT_RADIO_YEAR);
       if (!mounted) return;
 
       const f = clampFrequencyKhz(restored.frequency);
       const v = restored.volume;
+      const y = restored.year;
       setFrequencyState(f);
       setVolumeState(v);
+      setYearState(y);
       setIsHydrated(true);
       await setPlaybackVolume(v / 100);
-      await switchFrequency(f);
+      await switchFrequency(f, y);
     })();
 
     return () => {
@@ -65,9 +70,9 @@ export function RadioProvider({ children }: { children: React.ReactNode }) {
     setFrequencyState(next);
     await saveFrequency(next);
     if (isHydrated) {
-      await switchFrequency(next);
+      await switchFrequency(next, year);
     }
-  }, [isHydrated]);
+  }, [isHydrated, year]);
 
   const setVolume = useCallback(async (value: VolumeLevel) => {
     const next = Math.max(0, Math.min(100, Math.round(value)));
@@ -78,9 +83,17 @@ export function RadioProvider({ children }: { children: React.ReactNode }) {
     }
   }, [isHydrated]);
 
+  const setYear = useCallback(async (value: RadioYear) => {
+    setYearState(value);
+    await saveRadioYear(value);
+    if (isHydrated) {
+      await switchFrequency(frequency, value, { force: true });
+    }
+  }, [isHydrated, frequency]);
+
   const onTogglePlay = useCallback(async () => {
-    await togglePlayPause();
-  }, []);
+    await togglePlayPause(frequency, year);
+  }, [frequency, year]);
 
   const onStop = useCallback(async () => {
     await stopPlayback();
@@ -90,13 +103,15 @@ export function RadioProvider({ children }: { children: React.ReactNode }) {
     () => ({
       frequency,
       volume,
+      year,
       isPlaying,
       setFrequency,
       setVolume,
+      setYear,
       onTogglePlay,
       onStop,
     }),
-    [frequency, volume, isPlaying, setFrequency, setVolume, onTogglePlay, onStop],
+    [frequency, volume, year, isPlaying, setFrequency, setVolume, setYear, onTogglePlay, onStop],
   );
 
   return <RadioContext.Provider value={value}>{children}</RadioContext.Provider>;

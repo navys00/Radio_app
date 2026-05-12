@@ -4,11 +4,17 @@
       "id": "vilnius",
       "city": "Вильнюс",
       "frequency": 550,
+      "countryCode": "LT",
       "years": {
         "1941": [
           {
             "file": "moscow_1941_01",
             "title": "Сводка"
+          },
+          {
+            "file": "moscow_1942_01",
+            "title": "Только для Москвы (демо фильтра)",
+            "allowedStationIds": ["moscow"]
           }
         ],
         "1942": [
@@ -41,6 +47,7 @@
       "id": "riga",
       "city": "Рига",
       "frequency": 620,
+      "countryCode": "LV",
       "years": {
         "1941": [
           {
@@ -189,6 +196,7 @@
       "id": "moscow",
       "city": "Москва",
       "frequency": 880,
+      "countryCode": "RU",
       "years": {
         "1941": [
           {
@@ -590,6 +598,21 @@
             "title": "Эфир"
           }
         ]
+      }
+    }
+  ],
+  "offStationSlots": [
+    {
+      "id": "secret_mw_945",
+      "minKhz": 942,
+      "maxKhz": 948,
+      "overridesStationCapture": true,
+      "years": {
+        "1941": [{ "file": "moscow_1941_01", "title": "Чужая волна" }],
+        "1942": [{ "file": "moscow_1942_01", "title": "Помехи и голос" }],
+        "1943": [{ "file": "moscow_1943_01", "title": "Ночной эфир" }],
+        "1944": [{ "file": "moscow_1944_01", "title": "Сигнал" }],
+        "1945": [{ "file": "moscow_1945_01", "title": "Последний перехват" }]
       }
     }
   ]

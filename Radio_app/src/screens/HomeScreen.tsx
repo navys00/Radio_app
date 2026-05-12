@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSharedValue } from 'react-native-reanimated';
 import { DialGeometry, FrequencyScale } from '@/src/components/FrequencyScale';
 import { TubeLamp } from '@/src/components/TubeLamp';
@@ -8,14 +8,14 @@ import { TuningPointer } from '@/src/components/TuningPointer';
 import { VintageRadioBody } from '@/src/components/VintageRadioBody';
 import { VolumeKnob } from '@/src/components/VolumeKnob';
 import { useRadio } from '@/src/context/RadioContext';
-import { FREQUENCY_RANGE } from '@/src/data/radioData';
+import { FREQUENCY_RANGE, YEARS } from '@/src/data/radioData';
 
 const POINTER_W = 28;
 const TUNE_KNOB = 128;
 const VOL_KNOB = 108;
 
 export function HomeScreen() {
-  const { frequency, volume, setFrequency, setVolume } = useRadio();
+  const { frequency, volume, year, setFrequency, setVolume, setYear } = useRadio();
   const displayFreq = useSharedValue(frequency);
   const displayVol = useSharedValue(volume);
   const [dialGeo, setDialGeometry] = useState<DialGeometry | null>(null);
@@ -62,6 +62,28 @@ export function HomeScreen() {
         <View style={styles.topRow}>
           <View style={styles.topSpacer} />
           <TubeLamp warmupComplete={warmupDone} />
+        </View>
+
+        <View style={styles.yearRow} accessibilityRole="tablist">
+          {YEARS.map((y) => {
+            const active = y === year;
+            return (
+              <Pressable
+                key={y}
+                accessibilityRole="tab"
+                accessibilityState={{ selected: active }}
+                accessibilityLabel={`Год эфира ${y}`}
+                onPress={() => void setYear(y)}
+                style={({ pressed }) => [
+                  styles.yearChip,
+                  active && styles.yearChipActive,
+                  pressed && styles.yearChipPressed,
+                ]}
+              >
+                <Text style={[styles.yearChipText, active && styles.yearChipTextActive]}>{y}</Text>
+              </Pressable>
+            );
+          })}
         </View>
 
         <View style={styles.scaleWrap}>
@@ -113,6 +135,38 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
   },
   topSpacer: { flex: 1 },
+  yearRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'center',
+    gap: 8,
+    paddingHorizontal: 16,
+    paddingTop: 8,
+  },
+  yearChip: {
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    borderRadius: 4,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: 'rgba(62, 48, 32, 0.45)',
+    backgroundColor: 'rgba(245, 236, 216, 0.35)',
+  },
+  yearChipActive: {
+    backgroundColor: 'rgba(62, 48, 32, 0.88)',
+    borderColor: 'rgba(62, 48, 32, 0.88)',
+  },
+  yearChipPressed: {
+    opacity: 0.85,
+  },
+  yearChipText: {
+    fontFamily: 'Georgia',
+    fontSize: 14,
+    letterSpacing: 0.5,
+    color: 'rgba(62, 48, 32, 0.92)',
+  },
+  yearChipTextActive: {
+    color: '#f5ecd8',
+  },
   scaleWrap: {
     position: 'relative',
     marginTop: 20,
