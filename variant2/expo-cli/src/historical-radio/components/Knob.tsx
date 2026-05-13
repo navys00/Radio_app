@@ -1,5 +1,5 @@
-import React, { useMemo, useRef } from 'react';
-import { PanResponder, View } from 'react-native';
+import React, { useEffect, useMemo, useRef } from 'react';
+import { Animated, Easing, PanResponder, View } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { styles } from '../styles';
 
@@ -18,6 +18,16 @@ export function Knob({
 }) {
   const knobRef = useRef<View>(null);
   const centerRef = useRef<{ x: number; y: number } | null>(null);
+  const animatedRotation = useRef(new Animated.Value(rotation)).current;
+
+  useEffect(() => {
+    Animated.timing(animatedRotation, {
+      toValue: rotation,
+      duration: 80,
+      easing: Easing.out(Easing.quad),
+      useNativeDriver: true,
+    }).start();
+  }, [animatedRotation, rotation]);
 
   const panResponder = useMemo(
     () =>
@@ -41,6 +51,11 @@ export function Knob({
     [onRotate]
   );
 
+  const indicatorRotation = animatedRotation.interpolate({
+    inputRange: [-140, 140],
+    outputRange: ['-140deg', '140deg'],
+  });
+
   return (
     <View ref={knobRef} {...panResponder.panHandlers} style={styles.knobOuter}>
       <LinearGradient
@@ -53,9 +68,11 @@ export function Knob({
       <View style={styles.knobInnerRing} />
       <LinearGradient colors={['#9d7a56', '#2c221a']} style={styles.knobCore} />
 
-      <View style={[styles.knobIndicatorWrap, { transform: [{ rotate: `${rotation}deg` }] }]}>
+      <Animated.View
+        style={[styles.knobIndicatorWrap, { transform: [{ rotate: indicatorRotation }] }]}
+      >
         <LinearGradient colors={['#ffe2aa', '#ff9c3a']} style={styles.knobIndicator} />
-      </View>
+      </Animated.View>
     </View>
   );
 }

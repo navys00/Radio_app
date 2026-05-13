@@ -1,12 +1,28 @@
-import React, { useMemo, useState } from 'react';
-import { Pressable, SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import {
+  Animated,
+  Easing,
+  LayoutChangeEvent,
+  Platform,
+  Pressable,
+  SafeAreaView,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
+import * as Haptics from 'expo-haptics';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Knob } from './components/Knob';
 import { styles } from './styles';
 import stationsRaw from './data/stations.json';
 import type { MilitaryBlock, StationsByBlock } from './types';
-
-const clamp = (v: number, min: number, max: number) => Math.max(min, Math.min(max, v));
+import {
+  findNearestStation,
+  khzFromTuningPercent,
+  stationKey,
+  tuningPercentFromWaveRotation,
+} from './tuning';
 
 const STATIONS_BY_BLOCK = stationsRaw as StationsByBlock;
 
@@ -14,6 +30,8 @@ export default function HistoricalRadioApp() {
   const [waveRotation, setWaveRotation] = useState(-40);
   const [volumeRotation, setVolumeRotation] = useState(30);
   const [frequencyPosition, setFrequencyPosition] = useState(50);
+  const [scaleWidth, setScaleWidth] = useState(0);
+  const animatedFrequency = useRef(new Animated.Value(50)).current;
 
   const [selectedBlock, setSelectedBlock] = useState<MilitaryBlock>('СССР');
   const [selectedYear, setSelectedYear] = useState('1943');
@@ -21,12 +39,63 @@ export default function HistoricalRadioApp() {
   const militaryBlocks = useMemo(() => ['СССР', 'ОСЬ', 'Союзники'] as const, []);
   const years = useMemo(() => ['1941', '1942', '1943', '1944', '1945'] as const, []);
 
-  const stations = STATIONS_BY_BLOCK[selectedBlock] ?? [];
+  const stationsAll = STATIONS_BY_BLOCK[selectedBlock] ?? [];
+
+  const stations = useMemo(
+    () =>
+      stationsAll
+        .filter((s) => s.years.includes(selectedYear))
+        .sort((a, b) => a.khz - b.khz),
+    [stationsAll, selectedYear]
+  );
+
+  const tuningKhz = useMemo(() => khzFromTuningPercent(frequencyPosition), [frequencyPosition]);
+
+  const nearestStation = useMemo(
+    () => findNearestStation(stations, tuningKhz),
+    [stations, tuningKhz]
+  );
+
+  const lastSnapKeyRef = useRef<string | null>(null);
+
+  useEffect(() => {
+    if (stations.length === 0) {
+      lastSnapKeyRef.current = null;
+      return;
+    }
+    const key = nearestStation ? stationKey(nearestStation) : null;
+    if (
+      Platform.OS !== 'web' &&
+      key !== null &&
+      lastSnapKeyRef.current !== null &&
+      lastSnapKeyRef.current !== key
+    ) {
+      void Haptics.selectionAsync();
+    }
+    lastSnapKeyRef.current = key;
+  }, [nearestStation, stations.length]);
+
+  useEffect(() => {
+    Animated.timing(animatedFrequency, {
+      toValue: frequencyPosition,
+      duration: 140,
+      easing: Easing.out(Easing.cubic),
+      useNativeDriver: true,
+    }).start();
+  }, [animatedFrequency, frequencyPosition]);
+
+  const sliderTranslateX = animatedFrequency.interpolate({
+    inputRange: [0, 100],
+    outputRange: [0, Math.max(scaleWidth - 3, 0)],
+  });
+
+  const onScaleLayout = (event: LayoutChangeEvent) => {
+    setScaleWidth(event.nativeEvent.layout.width);
+  };
 
   const onWaveRotate = (deg: number) => {
     setWaveRotation(deg);
-    const mapped = ((deg + 140) / 280) * 100;
-    setFrequencyPosition(mapped);
+    setFrequencyPosition(tuningPercentFromWaveRotation(deg));
   };
 
   const activeBlockStyle =
@@ -53,11 +122,13 @@ export default function HistoricalRadioApp() {
           />
 
           <View style={styles.bodyNoise} pointerEvents="none" />
+          <View style={styles.bodyInsetShadow} pointerEvents="none" />
+          <View style={styles.bodyTopBevel} pointerEvents="none" />
+          <View style={styles.bodyBottomVignette} pointerEvents="none" />
 
           <View style={styles.innerPad}>
             <View style={styles.titleWrap}>
-              <Text style={styles.title}>Историческое Радио</Text>
-              <Text style={styles.subtitle}>1941–1945</Text>
+              <Text style={styles.title}>Фестиваль</Text>
             </View>
 
             <View style={styles.scale}>
@@ -66,6 +137,7 @@ export default function HistoricalRadioApp() {
                 locations={[0, 0.5, 1]}
                 style={StyleSheet.absoluteFill}
               />
+              <View style={styles.scaleInnerShadow} pointerEvents="none" />
 
               <View style={styles.scaleTopRow}>
                 <Text style={styles.scaleBand}>LW</Text>
@@ -73,7 +145,7 @@ export default function HistoricalRadioApp() {
                 <Text style={styles.scaleBand}>SW</Text>
               </View>
 
-              <View style={styles.scaleTicksWrap}>
+              <View style={styles.scaleTicksWrap} onLayout={onScaleLayout}>
                 <View style={styles.ticksRow}>
                   {Array.from({ length: 32 }).map((_, i) => (
                     <View
@@ -83,8 +155,14 @@ export default function HistoricalRadioApp() {
                   ))}
                 </View>
 
-                <View
-                  style={[styles.slider, { left: `${clamp(frequencyPosition, 0, 100)}%` }]}
+                <Animated.View
+                  style={[
+                    styles.slider,
+                    {
+                      transform: [{ translateX: sliderTranslateX }],
+                      opacity: scaleWidth > 0 ? 1 : 0,
+                    },
+                  ]}
                 />
 
                 <View style={styles.scaleBottomRow}>
@@ -95,18 +173,35 @@ export default function HistoricalRadioApp() {
                   ))}
                 </View>
               </View>
+
+              <LinearGradient
+                colors={['rgba(255,244,210,0.22)', 'rgba(255,244,210,0.02)', 'rgba(0,0,0,0)']}
+                locations={[0, 0.42, 1]}
+                start={{ x: 0.1, y: 0 }}
+                end={{ x: 0.85, y: 1 }}
+                style={styles.scaleGlassSheen}
+                pointerEvents="none"
+              />
+              <View style={styles.scaleGlassMist} pointerEvents="none" />
             </View>
 
             <View style={styles.panel}>
               <LinearGradient colors={['#32271f', '#1e1712']} style={StyleSheet.absoluteFill} />
+              <View style={styles.panelBevel} pointerEvents="none" />
               <View style={styles.row}>
                 {militaryBlocks.map((block) => {
                   const isActive = selectedBlock === block;
                   return (
                     <Pressable
                       key={block}
+                      disabled={isActive}
                       onPress={() => setSelectedBlock(block)}
-                      style={[styles.blockBtn, isActive ? activeBlockStyle : null]}
+                      style={({ pressed }) => [
+                        styles.blockBtn,
+                        isActive ? activeBlockStyle : null,
+                        isActive ? styles.controlDisabled : null,
+                        pressed ? styles.controlPressed : null,
+                      ]}
                     >
                       <Text style={[styles.blockText, isActive ? styles.blockTextActive : null]}>
                         {block}
@@ -119,14 +214,21 @@ export default function HistoricalRadioApp() {
 
             <View style={styles.panel}>
               <LinearGradient colors={['#32271f', '#1e1712']} style={StyleSheet.absoluteFill} />
+              <View style={styles.panelBevel} pointerEvents="none" />
               <View style={styles.rowBetween}>
                 {years.map((year) => {
                   const isActive = selectedYear === year;
                   return (
                     <Pressable
                       key={year}
+                      disabled={isActive}
                       onPress={() => setSelectedYear(year)}
-                      style={[styles.yearBtn, isActive ? styles.yearActive : styles.yearIdle]}
+                      style={({ pressed }) => [
+                        styles.yearBtn,
+                        isActive ? styles.yearActive : styles.yearIdle,
+                        isActive ? styles.controlDisabled : null,
+                        pressed ? styles.controlPressed : null,
+                      ]}
                     >
                       <Text style={[styles.yearText, isActive ? styles.yearTextActive : null]}>
                         {year}
@@ -138,19 +240,42 @@ export default function HistoricalRadioApp() {
             </View>
 
             <View style={styles.stationsWrap}>
-              {stations.map((s) => (
-                <View key={`${selectedBlock}-${s.city}-${s.freq}`} style={styles.stationCard}>
-                  <LinearGradient
-                    colors={['rgba(36,27,20,0.95)', 'rgba(18,14,11,0.95)']}
-                    style={StyleSheet.absoluteFill}
-                  />
-                  <View style={styles.stationLeft}>
-                    <Text style={styles.stationCity}>{s.city}</Text>
-                    <Text style={styles.stationBlock}>{selectedBlock}</Text>
-                  </View>
-                  <Text style={styles.stationFreq}>{s.freq}</Text>
+              {stations.length === 0 ? (
+                <View style={styles.emptyStationsWrap}>
+                  <Text style={styles.emptyStationsText}>
+                    На выбранный год в этом блоке нет станций в списке.
+                  </Text>
                 </View>
-              ))}
+              ) : (
+                stations.map((s) => {
+                  const isTuned =
+                    nearestStation !== null && stationKey(s) === stationKey(nearestStation);
+                  return (
+                    <View
+                      key={`${selectedBlock}-${selectedYear}-${s.city}-${s.khz}`}
+                      style={[styles.stationCard, isTuned ? styles.stationCardActive : null]}
+                    >
+                      <LinearGradient
+                        colors={
+                          isTuned
+                            ? ['rgba(62,44,28,0.98)', 'rgba(26,18,12,0.98)']
+                            : ['rgba(36,27,20,0.95)', 'rgba(18,14,11,0.95)']
+                        }
+                        style={StyleSheet.absoluteFill}
+                      />
+                      <View style={styles.stationLeft}>
+                        <Text style={[styles.stationCity, isTuned ? styles.stationCityActive : null]}>
+                          {s.city}
+                        </Text>
+                        <Text style={styles.stationBlock}>{selectedBlock}</Text>
+                      </View>
+                      <Text style={[styles.stationFreq, isTuned ? styles.stationFreqActive : null]}>
+                        {s.freq}
+                      </Text>
+                    </View>
+                  );
+                })
+              )}
             </View>
 
             <View style={styles.knobsRow}>
