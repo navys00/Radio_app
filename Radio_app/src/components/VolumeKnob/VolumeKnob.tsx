@@ -1,7 +1,8 @@
 import { useCallback, useEffect } from 'react';
-import { Platform, StyleSheet, View } from 'react-native';
+import { Platform, View } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, { runOnJS, SharedValue, useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
+import { styles } from './VolumeKnob.module';
 
 const DRAG_PX_FOR_FULL_RANGE = 220;
 
@@ -81,39 +82,3 @@ export function VolumeKnob({ displayVolume, lockedVolume, size, onCommit, onInte
     </GestureDetector>
   );
 }
-
-const styles = StyleSheet.create({
-  hit: {
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  knobOuter: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderWidth: 3,
-    borderColor: '#7a6a4a',
-    backgroundColor: '#1e1810',
-  },
-  knobRim: {
-    position: 'absolute',
-    borderWidth: 2,
-    borderColor: 'rgba(160, 150, 120, 0.5)',
-    backgroundColor: 'transparent',
-  },
-  knobFace: {
-    position: 'absolute',
-    backgroundColor: '#2a2620',
-    borderWidth: 1,
-    borderColor: 'rgba(50, 48, 44, 0.95)',
-  },
-  marker: {
-    position: 'absolute',
-    top: 9,
-    width: 3,
-    height: 12,
-    borderRadius: 2,
-    backgroundColor: '#c9b896',
-    borderWidth: 1,
-    borderColor: 'rgba(40, 38, 35, 0.85)',
-  },
-});

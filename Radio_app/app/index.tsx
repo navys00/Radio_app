@@ -1,3 +1,1 @@
-import { HomeScreen } from '@/src/screens/HomeScreen';
-
-export default HomeScreen;
+export { default } from './root-index/RootIndex';

@@ -1,0 +1,1 @@
+export { TubeLamp } from './TubeLamp';

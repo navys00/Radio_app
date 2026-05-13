@@ -1,13 +1,36 @@
+import occupationJson from '@/src/assets/occupation-matrix.json';
 import stationsJson from '@/src/assets/stations.json';
-import type { OffStationSlot, RadioYear, Station, StationTrack, StationsConfig } from '@/src/types/radio';
+import type {
+  BroadcastBloc,
+  OffStationSlot,
+  RadioYear,
+  Station,
+  StationTrack,
+  StationsConfig,
+} from '@/src/types/radio';
 
 export const YEARS: RadioYear[] = ['1941', '1942', '1943', '1944', '1945'];
 
 export const DEFAULT_RADIO_YEAR: RadioYear = '1943';
 
+export const DEFAULT_BROADCAST_BLOC: BroadcastBloc = 'ussr';
+
+/** Порядок переключателя блока эфира на главном экране. */
+export const BROADCAST_BLOC_OPTIONS: { id: BroadcastBloc; label: string }[] = [
+  { id: 'ussr', label: 'СССР' },
+  { id: 'allies', label: 'Союзники' },
+  { id: 'axis', label: 'Ось' },
+];
+
 const config = stationsJson as StationsConfig;
 
 export const stations: Station[] = config.stations;
+
+type OccupationFile = {
+  availability?: Record<string, Partial<Record<RadioYear, boolean>>>;
+};
+
+const occupationData = occupationJson as OccupationFile;
 
 export const offStationSlots: OffStationSlot[] = [...(config.offStationSlots ?? [])].sort((a, b) =>
   a.minKhz !== b.minKhz ? a.minKhz - b.minKhz : a.id.localeCompare(b.id),
@@ -40,21 +63,19 @@ export const INFORMATION_FIELD_BANDS = [
 
 export type InformationFieldBand = (typeof INFORMATION_FIELD_BANDS)[number];
 
-/** Станции, попадающие в полосу информационного поля (включительно по min/max кГц), по возрастанию частоты. */
-export function stationsInInformationBand(bandIndex: number): Station[] {
+/** Станции полосы по диапазону частот (из переданного списка видимых). */
+export function stationsInInformationBand(bandIndex: number, stationList: Station[]): Station[] {
   const b = INFORMATION_FIELD_BANDS[bandIndex];
   if (!b) return [];
-  return stations
+  return stationList
     .filter((s) => s.frequency >= b.minKhz && s.frequency <= b.maxKhz)
     .sort((a, b) => a.frequency - b.frequency);
 }
 
 export const FREQUENCY_RANGE = { min: 520, max: 1600 } as const;
 
-/** Радиус захвата станции (кГц): ближайшая станция, если расстояние не больше этого значения. */
 export const STATION_CAPTURE_KHZ = 35;
 
-/** Базовый гистерезис для слотов вне станций; фактическая зона ограничивается ближайшими станциями. */
 export const OFF_STATION_HYSTERESIS_KHZ = 12;
 
 export const stationById = new Map<string, Station>(stations.map((station) => [station.id, station]));
@@ -64,7 +85,6 @@ export function clampFrequencyKhz(value: number): number {
   return Math.max(FREQUENCY_RANGE.min, Math.min(FREQUENCY_RANGE.max, n));
 }
 
-/** Все треки станции по всем годам (например для валидации контента). */
 export function getAllTracksForStation(station: Station): StationTrack[] {
   const out: StationTrack[] = [];
   for (const y of YEARS) {
@@ -100,14 +120,60 @@ export function getTracksForOffSlotYear(slot: OffStationSlot, year: RadioYear): 
   return [...(slot.years[year] ?? [])];
 }
 
-/** Ближайшая станция в пределах `STATION_CAPTURE_KHZ`, иначе `undefined`. */
-export function resolveStationForFrequency(frequencyKhz: number): Station | undefined {
-  if (stations.length === 0) return undefined;
+function offSlotActiveForBlocYear(
+  slot: OffStationSlot,
+  bloc: BroadcastBloc,
+  year: RadioYear,
+): boolean {
+  if (slot.bloc != null && slot.bloc !== bloc) return false;
+  return getTracksForOffSlotYear(slot, year).length > 0;
+}
+
+/** Станции выбранного блока (полный пул в данных, до 12). */
+export function getStationsForBloc(bloc: BroadcastBloc): Station[] {
+  return stations.filter((s) => s.bloc === bloc);
+}
+
+/** Доступна ли станция в эфире в данный год по матрице оккупации (нет записи = доступна). */
+export function isStationOnAirInYear(stationId: string, year: RadioYear): boolean {
+  const row = occupationData.availability?.[stationId];
+  if (!row) return true;
+  const v = row[year];
+  return v !== false;
+}
+
+/** Видимые станции: блок + год (оккупация). */
+export function getVisibleStations(bloc: BroadcastBloc, year: RadioYear): Station[] {
+  return getStationsForBloc(bloc).filter((s) => isStationOnAirInYear(s.id, year));
+}
+
+/** Ближайшая по частоте станция из списка (для снапа при смене блока/года). */
+export function nearestStationFrequency(currentKhz: number, list: Station[]): number {
+  if (list.length === 0) return clampFrequencyKhz(currentKhz);
+  const f = clampFrequencyKhz(currentKhz);
+  let best = list[0].frequency;
+  let bestD = Math.abs(best - f);
+  for (let i = 1; i < list.length; i++) {
+    const d = Math.abs(list[i].frequency - f);
+    if (d < bestD) {
+      bestD = d;
+      best = list[i].frequency;
+    }
+  }
+  return best;
+}
+
+/** Захват станции только среди переданного списка (видимый эфир). */
+export function resolveStationForFrequency(
+  frequencyKhz: number,
+  candidateStations: Station[],
+): Station | undefined {
+  if (candidateStations.length === 0) return undefined;
   const f = clampFrequencyKhz(frequencyKhz);
-  let best: Station = stations[0];
+  let best = candidateStations[0];
   let bestD = Math.abs(f - best.frequency);
-  for (let i = 1; i < stations.length; i++) {
-    const s = stations[i];
+  for (let i = 1; i < candidateStations.length; i++) {
+    const s = candidateStations[i];
     const d = Math.abs(f - s.frequency);
     if (d < bestD) {
       bestD = d;
@@ -117,20 +183,26 @@ export function resolveStationForFrequency(frequencyKhz: number): Station | unde
   return bestD <= STATION_CAPTURE_KHZ ? best : undefined;
 }
 
-function pickOffSlotAtFrequency(frequencyKhz: number): OffStationSlot | null {
+function pickOffSlotAtFrequency(
+  frequencyKhz: number,
+  candidateStations: Station[],
+  bloc: BroadcastBloc,
+  year: RadioYear,
+): OffStationSlot | null {
   const f = clampFrequencyKhz(frequencyKhz);
   for (const s of offStationSlots) {
+    if (!offSlotActiveForBlocYear(s, bloc, year)) continue;
     if (f < s.minKhz || f > s.maxKhz) continue;
     if (s.overridesStationCapture !== false) return s;
-    if (!resolveStationForFrequency(f)) return s;
+    if (!resolveStationForFrequency(f, candidateStations)) return s;
   }
   return null;
 }
 
-function nearestStationAbove(minExclusive: number): Station | undefined {
+function nearestStationAbove(minExclusive: number, candidateStations: Station[]): Station | undefined {
   let best: Station | undefined;
   let bestF = Infinity;
-  for (const s of stations) {
+  for (const s of candidateStations) {
     if (s.frequency > minExclusive && s.frequency < bestF) {
       bestF = s.frequency;
       best = s;
@@ -139,10 +211,10 @@ function nearestStationAbove(minExclusive: number): Station | undefined {
   return best;
 }
 
-function nearestStationBelow(maxExclusive: number): Station | undefined {
+function nearestStationBelow(maxExclusive: number, candidateStations: Station[]): Station | undefined {
   let best: Station | undefined;
   let bestF = -Infinity;
-  for (const s of stations) {
+  for (const s of candidateStations) {
     if (s.frequency < maxExclusive && s.frequency > bestF) {
       bestF = s.frequency;
       best = s;
@@ -151,17 +223,19 @@ function nearestStationBelow(maxExclusive: number): Station | undefined {
   return best;
 }
 
-/** Допустимый гистерезис снаружи слота, чтобы не залезать в зону уверенного захвата соседней станции. */
-export function effectiveOffSlotHysteresisKhz(slot: OffStationSlot): { down: number; up: number } {
+export function effectiveOffSlotHysteresisKhz(
+  slot: OffStationSlot,
+  candidateStations: Station[],
+): { down: number; up: number } {
   let up = OFF_STATION_HYSTERESIS_KHZ;
   let down = OFF_STATION_HYSTERESIS_KHZ;
-  const above = nearestStationAbove(slot.maxKhz);
+  const above = nearestStationAbove(slot.maxKhz, candidateStations);
   if (above) {
     const edge = above.frequency - STATION_CAPTURE_KHZ;
     const gap = edge - slot.maxKhz;
     up = Math.max(0, Math.min(up, gap > 0 ? gap - 1 : 0));
   }
-  const below = nearestStationBelow(slot.minKhz);
+  const below = nearestStationBelow(slot.minKhz, candidateStations);
   if (below) {
     const edge = below.frequency + STATION_CAPTURE_KHZ;
     const gap = slot.minKhz - edge;
@@ -177,29 +251,28 @@ export type TunedSource =
 
 export type OffSlotHysteresisState = { slotId: string | null };
 
-/**
- * Разрешает источник эфира: слот вне станций (с приоритетом overridesStationCapture),
- * затем захват станции, иначе шум.
- */
 export function resolveTunedSource(
   frequencyKhz: number,
   offState: OffSlotHysteresisState,
+  candidateStations: Station[],
+  bloc: BroadcastBloc,
+  year: RadioYear,
 ): { source: TunedSource; nextOffState: OffSlotHysteresisState } {
   const f = clampFrequencyKhz(frequencyKhz);
-  const slot = pickOffSlotAtFrequency(f);
+  const slot = pickOffSlotAtFrequency(f, candidateStations, bloc, year);
   if (slot) {
     return { source: { kind: 'off', slot }, nextOffState: { slotId: slot.id } };
   }
 
-  const station = resolveStationForFrequency(frequencyKhz);
+  const station = resolveStationForFrequency(frequencyKhz, candidateStations);
   if (station) {
     return { source: { kind: 'station', station }, nextOffState: { slotId: null } };
   }
 
   if (offState.slotId) {
     const prev = offStationSlots.find((s) => s.id === offState.slotId);
-    if (prev) {
-      const { down, up } = effectiveOffSlotHysteresisKhz(prev);
+    if (prev && offSlotActiveForBlocYear(prev, bloc, year)) {
+      const { down, up } = effectiveOffSlotHysteresisKhz(prev, candidateStations);
       const lo = prev.minKhz - down;
       const hi = prev.maxKhz + up;
       if (f >= lo && f <= hi) {
@@ -218,4 +291,11 @@ export function getStationById(stationId: string): Station | undefined {
 export function parseRadioYear(value: string | null | undefined): RadioYear | null {
   if (!value) return null;
   return YEARS.includes(value as RadioYear) ? (value as RadioYear) : null;
+}
+
+const BLOCS: BroadcastBloc[] = ['ussr', 'allies', 'axis'];
+
+export function parseBroadcastBloc(value: string | null | undefined): BroadcastBloc | null {
+  if (!value) return null;
+  return BLOCS.includes(value as BroadcastBloc) ? (value as BroadcastBloc) : null;
 }

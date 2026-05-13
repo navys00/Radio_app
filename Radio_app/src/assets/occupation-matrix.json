@@ -1,0 +1,71 @@
+{
+  "availability": {
+    "vilnius": {
+      "1941": false,
+      "1942": false,
+      "1943": false,
+      "1944": false,
+      "1945": true
+    },
+    "tallinn": {
+      "1941": false,
+      "1942": false,
+      "1943": false,
+      "1944": true,
+      "1945": true
+    },
+    "minsk": {
+      "1941": false,
+      "1942": false,
+      "1943": false,
+      "1944": false,
+      "1945": true
+    },
+    "kharkov": {
+      "1941": false,
+      "1942": false,
+      "1943": true,
+      "1944": true,
+      "1945": true
+    },
+    "kyiv": {
+      "1941": false,
+      "1942": false,
+      "1943": false,
+      "1944": true,
+      "1945": true
+    },
+    "stalingrad": {
+      "1942": false,
+      "1943": false,
+      "1944": false,
+      "1945": false
+    },
+    "rome": {
+      "1944": false,
+      "1945": false
+    },
+    "sofia": {
+      "1944": false,
+      "1945": false
+    },
+    "milan": {
+      "1945": false
+    },
+    "vienna": {
+      "1945": false
+    },
+    "oslo": {
+      "1945": false
+    },
+    "budapest": {
+      "1945": false
+    },
+    "warsaw": {
+      "1945": false
+    },
+    "zagreb": {
+      "1945": false
+    }
+  }
+}

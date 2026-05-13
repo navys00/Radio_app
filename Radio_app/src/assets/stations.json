@@ -3,376 +3,37 @@
     {
       "id": "vilnius",
       "city": "Вильнюс",
-      "frequency": 550,
+      "frequency": 520,
+      "bloc": "ussr",
       "countryCode": "LT",
       "years": {
         "1941": [
           {
             "file": "moscow_1941_01",
-            "title": "Сводка"
-          },
-          {
-            "file": "moscow_1942_01",
-            "title": "Только для Москвы (демо фильтра)",
-            "allowedStationIds": ["moscow"]
-          }
-        ],
-        "1942": [
-          {
-            "file": "moscow_1942_01",
-            "title": "Хроника"
-          }
-        ],
-        "1943": [
-          {
-            "file": "moscow_1943_01",
-            "title": "Репортаж"
-          }
-        ],
-        "1944": [
-          {
-            "file": "moscow_1944_01",
-            "title": "Письма"
-          }
-        ],
-        "1945": [
-          {
-            "file": "moscow_1945_01",
-            "title": "Выпуск"
-          }
-        ]
-      }
-    },
-    {
-      "id": "riga",
-      "city": "Рига",
-      "frequency": 620,
-      "countryCode": "LV",
-      "years": {
-        "1941": [
-          {
-            "file": "moscow_1941_01",
-            "title": "Сводка"
-          }
-        ],
-        "1942": [
-          {
-            "file": "moscow_1942_01",
-            "title": "Хроника"
-          }
-        ],
-        "1943": [
-          {
-            "file": "moscow_1943_01",
-            "title": "Репортаж"
-          }
-        ],
-        "1944": [
-          {
-            "file": "moscow_1944_01",
-            "title": "Письма"
-          }
-        ],
-        "1945": [
-          {
-            "file": "moscow_1945_01",
-            "title": "Выпуск"
-          }
-        ]
-      }
-    },
-    {
-      "id": "tallinn",
-      "city": "Таллин",
-      "frequency": 690,
-      "years": {
-        "1941": [
-          {
-            "file": "moscow_1941_01",
-            "title": "Сводка"
-          }
-        ],
-        "1942": [
-          {
-            "file": "moscow_1942_01",
-            "title": "Хроника"
-          }
-        ],
-        "1943": [
-          {
-            "file": "moscow_1943_01",
-            "title": "Репортаж"
-          }
-        ],
-        "1944": [
-          {
-            "file": "moscow_1944_01",
-            "title": "Письма"
-          }
-        ],
-        "1945": [
-          {
-            "file": "moscow_1945_01",
-            "title": "Выпуск"
-          }
-        ]
-      }
-    },
-    {
-      "id": "kiev",
-      "city": "Киев",
-      "frequency": 760,
-      "years": {
-        "1941": [
-          {
-            "file": "moscow_1941_01",
-            "title": "Сводка"
-          }
-        ],
-        "1942": [
-          {
-            "file": "moscow_1942_01",
-            "title": "Хроника"
-          }
-        ],
-        "1943": [
-          {
-            "file": "moscow_1943_01",
-            "title": "Репортаж"
-          }
-        ],
-        "1944": [
-          {
-            "file": "moscow_1944_01",
-            "title": "Письма"
-          }
-        ],
-        "1945": [
-          {
-            "file": "moscow_1945_01",
-            "title": "Выпуск"
-          }
-        ]
-      }
-    },
-    {
-      "id": "minsk",
-      "city": "Минск",
-      "frequency": 810,
-      "years": {
-        "1941": [
-          {
-            "file": "moscow_1941_01",
-            "title": "Сводка"
-          }
-        ],
-        "1942": [
-          {
-            "file": "moscow_1942_01",
-            "title": "Хроника"
-          }
-        ],
-        "1943": [
-          {
-            "file": "moscow_1943_01",
-            "title": "Репортаж"
-          }
-        ],
-        "1944": [
-          {
-            "file": "moscow_1944_01",
-            "title": "Письма"
-          }
-        ],
-        "1945": [
-          {
-            "file": "moscow_1945_01",
-            "title": "Выпуск"
-          }
-        ]
-      }
-    },
-    {
-      "id": "moscow",
-      "city": "Москва",
-      "frequency": 880,
-      "countryCode": "RU",
-      "years": {
-        "1941": [
-          {
-            "file": "moscow_1941_01",
-            "title": "Сводка"
-          }
-        ],
-        "1942": [
-          {
-            "file": "moscow_1942_01",
-            "title": "Хроника"
-          }
-        ],
-        "1943": [
-          {
-            "file": "moscow_1943_01",
-            "title": "Репортаж"
-          }
-        ],
-        "1944": [
-          {
-            "file": "moscow_1944_01",
-            "title": "Письма"
-          }
-        ],
-        "1945": [
-          {
-            "file": "moscow_1945_01",
-            "title": "Выпуск"
-          }
-        ]
-      }
-    },
-    {
-      "id": "odessa",
-      "city": "Одесса",
-      "frequency": 950,
-      "years": {
-        "1941": [
-          {
-            "file": "moscow_1941_01",
-            "title": "Сводка"
-          }
-        ],
-        "1942": [
-          {
-            "file": "moscow_1942_01",
-            "title": "Хроника"
-          }
-        ],
-        "1943": [
-          {
-            "file": "moscow_1943_01",
-            "title": "Репортаж"
-          }
-        ],
-        "1944": [
-          {
-            "file": "moscow_1944_01",
-            "title": "Письма"
-          }
-        ],
-        "1945": [
-          {
-            "file": "moscow_1945_01",
-            "title": "Выпуск"
-          }
-        ]
-      }
-    },
-    {
-      "id": "kharkov",
-      "city": "Харьков",
-      "frequency": 1020,
-      "years": {
-        "1941": [
-          {
-            "file": "moscow_1941_01",
-            "title": "Сводка"
-          }
-        ],
-        "1942": [
-          {
-            "file": "moscow_1942_01",
-            "title": "Хроника"
-          }
-        ],
-        "1943": [
-          {
-            "file": "moscow_1943_01",
-            "title": "Репортаж"
-          }
-        ],
-        "1944": [
-          {
-            "file": "moscow_1944_01",
-            "title": "Письма"
-          }
-        ],
-        "1945": [
-          {
-            "file": "moscow_1945_01",
-            "title": "Выпуск"
-          }
-        ]
-      }
-    },
-    {
-      "id": "sevastopol",
-      "city": "Севастополь",
-      "frequency": 1090,
-      "years": {
-        "1941": [
-          {
-            "file": "leningrad_1941_01",
-            "title": "Голос города"
-          }
-        ],
-        "1942": [
-          {
-            "file": "leningrad_1942_01",
-            "title": "Музыка"
-          }
-        ],
-        "1943": [
-          {
-            "file": "leningrad_1943_01",
-            "title": "Сводка"
-          }
-        ],
-        "1944": [
-          {
-            "file": "leningrad_1944_01",
-            "title": "Репортаж"
-          }
-        ],
-        "1945": [
-          {
-            "file": "leningrad_1945_01",
             "title": "Эфир"
           }
-        ]
-      }
-    },
-    {
-      "id": "rostov",
-      "city": "Ростов-на-Дону",
-      "frequency": 1180,
-      "years": {
-        "1941": [
-          {
-            "file": "leningrad_1941_01",
-            "title": "Голос города"
-          }
         ],
         "1942": [
           {
             "file": "leningrad_1942_01",
-            "title": "Музыка"
+            "title": "Эфир"
           }
         ],
         "1943": [
           {
-            "file": "leningrad_1943_01",
-            "title": "Сводка"
+            "file": "moscow_1943_01",
+            "title": "Эфир"
           }
         ],
         "1944": [
           {
             "file": "leningrad_1944_01",
-            "title": "Репортаж"
+            "title": "Эфир"
           }
         ],
         "1945": [
           {
-            "file": "leningrad_1945_01",
+            "file": "moscow_1945_01",
             "title": "Эфир"
           }
         ]
@@ -381,35 +42,232 @@
     {
       "id": "stalingrad",
       "city": "Сталинград",
-      "frequency": 1250,
+      "frequency": 597,
+      "bloc": "ussr",
+      "countryCode": "RU",
       "years": {
         "1941": [
           {
-            "file": "leningrad_1941_01",
-            "title": "Голос города"
+            "file": "moscow_1941_01",
+            "title": "Эфир"
           }
         ],
         "1942": [
           {
             "file": "leningrad_1942_01",
-            "title": "Музыка"
+            "title": "Эфир"
           }
         ],
         "1943": [
           {
-            "file": "leningrad_1943_01",
-            "title": "Сводка"
+            "file": "moscow_1943_01",
+            "title": "Эфир"
           }
         ],
         "1944": [
           {
             "file": "leningrad_1944_01",
-            "title": "Репортаж"
+            "title": "Эфир"
           }
         ],
         "1945": [
           {
-            "file": "leningrad_1945_01",
+            "file": "moscow_1945_01",
+            "title": "Эфир"
+          }
+        ]
+      }
+    },
+    {
+      "id": "tallinn",
+      "city": "Таллин",
+      "frequency": 674,
+      "bloc": "ussr",
+      "countryCode": "EE",
+      "years": {
+        "1941": [
+          {
+            "file": "moscow_1941_01",
+            "title": "Эфир"
+          }
+        ],
+        "1942": [
+          {
+            "file": "leningrad_1942_01",
+            "title": "Эфир"
+          }
+        ],
+        "1943": [
+          {
+            "file": "moscow_1943_01",
+            "title": "Эфир"
+          }
+        ],
+        "1944": [
+          {
+            "file": "leningrad_1944_01",
+            "title": "Эфир"
+          }
+        ],
+        "1945": [
+          {
+            "file": "moscow_1945_01",
+            "title": "Эфир"
+          }
+        ]
+      }
+    },
+    {
+      "id": "minsk",
+      "city": "Минск",
+      "frequency": 751,
+      "bloc": "ussr",
+      "countryCode": "BY",
+      "years": {
+        "1941": [
+          {
+            "file": "moscow_1941_01",
+            "title": "Эфир"
+          }
+        ],
+        "1942": [
+          {
+            "file": "leningrad_1942_01",
+            "title": "Эфир"
+          }
+        ],
+        "1943": [
+          {
+            "file": "moscow_1943_01",
+            "title": "Эфир"
+          }
+        ],
+        "1944": [
+          {
+            "file": "leningrad_1944_01",
+            "title": "Эфир"
+          }
+        ],
+        "1945": [
+          {
+            "file": "moscow_1945_01",
+            "title": "Эфир"
+          }
+        ]
+      }
+    },
+    {
+      "id": "kharkov",
+      "city": "Харьков",
+      "frequency": 828,
+      "bloc": "ussr",
+      "countryCode": "UA",
+      "years": {
+        "1941": [
+          {
+            "file": "moscow_1941_01",
+            "title": "Эфир"
+          }
+        ],
+        "1942": [
+          {
+            "file": "leningrad_1942_01",
+            "title": "Эфир"
+          }
+        ],
+        "1943": [
+          {
+            "file": "moscow_1943_01",
+            "title": "Эфир"
+          }
+        ],
+        "1944": [
+          {
+            "file": "leningrad_1944_01",
+            "title": "Эфир"
+          }
+        ],
+        "1945": [
+          {
+            "file": "moscow_1945_01",
+            "title": "Эфир"
+          }
+        ]
+      }
+    },
+    {
+      "id": "kyiv",
+      "city": "Киев",
+      "frequency": 905,
+      "bloc": "ussr",
+      "countryCode": "UA",
+      "years": {
+        "1941": [
+          {
+            "file": "moscow_1941_01",
+            "title": "Эфир"
+          }
+        ],
+        "1942": [
+          {
+            "file": "leningrad_1942_01",
+            "title": "Эфир"
+          }
+        ],
+        "1943": [
+          {
+            "file": "moscow_1943_01",
+            "title": "Эфир"
+          }
+        ],
+        "1944": [
+          {
+            "file": "leningrad_1944_01",
+            "title": "Эфир"
+          }
+        ],
+        "1945": [
+          {
+            "file": "moscow_1945_01",
+            "title": "Эфир"
+          }
+        ]
+      }
+    },
+    {
+      "id": "moscow",
+      "city": "Москва",
+      "frequency": 984,
+      "bloc": "ussr",
+      "countryCode": "RU",
+      "years": {
+        "1941": [
+          {
+            "file": "moscow_1941_01",
+            "title": "Эфир"
+          }
+        ],
+        "1942": [
+          {
+            "file": "leningrad_1942_01",
+            "title": "Эфир"
+          }
+        ],
+        "1943": [
+          {
+            "file": "moscow_1943_01",
+            "title": "Эфир"
+          }
+        ],
+        "1944": [
+          {
+            "file": "leningrad_1944_01",
+            "title": "Эфир"
+          }
+        ],
+        "1945": [
+          {
+            "file": "moscow_1945_01",
             "title": "Эфир"
           }
         ]
@@ -418,35 +276,37 @@
     {
       "id": "leningrad",
       "city": "Ленинград",
-      "frequency": 1320,
+      "frequency": 1100,
+      "bloc": "ussr",
+      "countryCode": "RU",
       "years": {
         "1941": [
           {
-            "file": "leningrad_1941_01",
-            "title": "Голос города"
+            "file": "moscow_1941_01",
+            "title": "Эфир"
           }
         ],
         "1942": [
           {
             "file": "leningrad_1942_01",
-            "title": "Музыка"
+            "title": "Эфир"
           }
         ],
         "1943": [
           {
-            "file": "leningrad_1943_01",
-            "title": "Сводка"
+            "file": "moscow_1943_01",
+            "title": "Эфир"
           }
         ],
         "1944": [
           {
             "file": "leningrad_1944_01",
-            "title": "Репортаж"
+            "title": "Эфир"
           }
         ],
         "1945": [
           {
-            "file": "leningrad_1945_01",
+            "file": "moscow_1945_01",
             "title": "Эфир"
           }
         ]
@@ -455,72 +315,76 @@
     {
       "id": "kuibyshev",
       "city": "Куйбышев",
-      "frequency": 1390,
+      "frequency": 1216,
+      "bloc": "ussr",
+      "countryCode": "RU",
       "years": {
         "1941": [
           {
-            "file": "leningrad_1941_01",
-            "title": "Голос города"
+            "file": "moscow_1941_01",
+            "title": "Эфир"
           }
         ],
         "1942": [
           {
             "file": "leningrad_1942_01",
-            "title": "Музыка"
+            "title": "Эфир"
           }
         ],
         "1943": [
           {
-            "file": "leningrad_1943_01",
-            "title": "Сводка"
+            "file": "moscow_1943_01",
+            "title": "Эфир"
           }
         ],
         "1944": [
           {
             "file": "leningrad_1944_01",
-            "title": "Репортаж"
+            "title": "Эфир"
           }
         ],
         "1945": [
           {
-            "file": "leningrad_1945_01",
+            "file": "moscow_1945_01",
             "title": "Эфир"
           }
         ]
       }
     },
     {
-      "id": "murmansk",
-      "city": "Мурманск",
-      "frequency": 1460,
+      "id": "sverdlovsk",
+      "city": "Свердловск",
+      "frequency": 1332,
+      "bloc": "ussr",
+      "countryCode": "RU",
       "years": {
         "1941": [
           {
-            "file": "leningrad_1941_01",
-            "title": "Голос города"
+            "file": "moscow_1941_01",
+            "title": "Эфир"
           }
         ],
         "1942": [
           {
             "file": "leningrad_1942_01",
-            "title": "Музыка"
+            "title": "Эфир"
           }
         ],
         "1943": [
           {
-            "file": "leningrad_1943_01",
-            "title": "Сводка"
+            "file": "moscow_1943_01",
+            "title": "Эфир"
           }
         ],
         "1944": [
           {
             "file": "leningrad_1944_01",
-            "title": "Репортаж"
+            "title": "Эфир"
           }
         ],
         "1945": [
           {
-            "file": "leningrad_1945_01",
+            "file": "moscow_1945_01",
             "title": "Эфир"
           }
         ]
@@ -529,35 +393,37 @@
     {
       "id": "tbilisi",
       "city": "Тбилиси",
-      "frequency": 1530,
+      "frequency": 1448,
+      "bloc": "ussr",
+      "countryCode": "GE",
       "years": {
         "1941": [
           {
-            "file": "leningrad_1941_01",
-            "title": "Голос города"
+            "file": "moscow_1941_01",
+            "title": "Эфир"
           }
         ],
         "1942": [
           {
             "file": "leningrad_1942_01",
-            "title": "Музыка"
+            "title": "Эфир"
           }
         ],
         "1943": [
           {
-            "file": "leningrad_1943_01",
-            "title": "Сводка"
+            "file": "moscow_1943_01",
+            "title": "Эфир"
           }
         ],
         "1944": [
           {
             "file": "leningrad_1944_01",
-            "title": "Репортаж"
+            "title": "Эфир"
           }
         ],
         "1945": [
           {
-            "file": "leningrad_1945_01",
+            "file": "moscow_1945_01",
             "title": "Эфир"
           }
         ]
@@ -566,35 +432,856 @@
     {
       "id": "baku",
       "city": "Баку",
-      "frequency": 1600,
+      "frequency": 1564,
+      "bloc": "ussr",
+      "countryCode": "AZ",
       "years": {
         "1941": [
           {
-            "file": "leningrad_1941_01",
-            "title": "Голос города"
+            "file": "moscow_1941_01",
+            "title": "Эфир"
           }
         ],
         "1942": [
           {
             "file": "leningrad_1942_01",
-            "title": "Музыка"
+            "title": "Эфир"
           }
         ],
         "1943": [
           {
-            "file": "leningrad_1943_01",
-            "title": "Сводка"
+            "file": "moscow_1943_01",
+            "title": "Эфир"
           }
         ],
         "1944": [
           {
             "file": "leningrad_1944_01",
-            "title": "Репортаж"
+            "title": "Эфир"
           }
         ],
         "1945": [
           {
-            "file": "leningrad_1945_01",
+            "file": "moscow_1945_01",
+            "title": "Эфир"
+          }
+        ]
+      }
+    },
+    {
+      "id": "london",
+      "city": "Лондон",
+      "frequency": 520,
+      "bloc": "allies",
+      "countryCode": "GB",
+      "years": {
+        "1941": [
+          {
+            "file": "moscow_1941_01",
+            "title": "Эфир"
+          }
+        ],
+        "1942": [
+          {
+            "file": "leningrad_1942_01",
+            "title": "Эфир"
+          }
+        ],
+        "1943": [
+          {
+            "file": "moscow_1943_01",
+            "title": "Эфир"
+          }
+        ],
+        "1944": [
+          {
+            "file": "leningrad_1944_01",
+            "title": "Эфир"
+          }
+        ],
+        "1945": [
+          {
+            "file": "moscow_1945_01",
+            "title": "Эфир"
+          }
+        ]
+      }
+    },
+    {
+      "id": "liverpool",
+      "city": "Ливерпуль",
+      "frequency": 674,
+      "bloc": "allies",
+      "countryCode": "GB",
+      "years": {
+        "1941": [
+          {
+            "file": "moscow_1941_01",
+            "title": "Эфир"
+          }
+        ],
+        "1942": [
+          {
+            "file": "leningrad_1942_01",
+            "title": "Эфир"
+          }
+        ],
+        "1943": [
+          {
+            "file": "moscow_1943_01",
+            "title": "Эфир"
+          }
+        ],
+        "1944": [
+          {
+            "file": "leningrad_1944_01",
+            "title": "Эфир"
+          }
+        ],
+        "1945": [
+          {
+            "file": "moscow_1945_01",
+            "title": "Эфир"
+          }
+        ]
+      }
+    },
+    {
+      "id": "glasgow",
+      "city": "Глазго",
+      "frequency": 751,
+      "bloc": "allies",
+      "countryCode": "GB",
+      "years": {
+        "1941": [
+          {
+            "file": "moscow_1941_01",
+            "title": "Эфир"
+          }
+        ],
+        "1942": [
+          {
+            "file": "leningrad_1942_01",
+            "title": "Эфир"
+          }
+        ],
+        "1943": [
+          {
+            "file": "moscow_1943_01",
+            "title": "Эфир"
+          }
+        ],
+        "1944": [
+          {
+            "file": "leningrad_1944_01",
+            "title": "Эфир"
+          }
+        ],
+        "1945": [
+          {
+            "file": "moscow_1945_01",
+            "title": "Эфир"
+          }
+        ]
+      }
+    },
+    {
+      "id": "cardiff",
+      "city": "Кардифф",
+      "frequency": 828,
+      "bloc": "allies",
+      "countryCode": "GB",
+      "years": {
+        "1941": [
+          {
+            "file": "moscow_1941_01",
+            "title": "Эфир"
+          }
+        ],
+        "1942": [
+          {
+            "file": "leningrad_1942_01",
+            "title": "Эфир"
+          }
+        ],
+        "1943": [
+          {
+            "file": "moscow_1943_01",
+            "title": "Эфир"
+          }
+        ],
+        "1944": [
+          {
+            "file": "leningrad_1944_01",
+            "title": "Эфир"
+          }
+        ],
+        "1945": [
+          {
+            "file": "moscow_1945_01",
+            "title": "Эфир"
+          }
+        ]
+      }
+    },
+    {
+      "id": "belfast",
+      "city": "Белфаст",
+      "frequency": 905,
+      "bloc": "allies",
+      "countryCode": "GB",
+      "years": {
+        "1941": [
+          {
+            "file": "moscow_1941_01",
+            "title": "Эфир"
+          }
+        ],
+        "1942": [
+          {
+            "file": "leningrad_1942_01",
+            "title": "Эфир"
+          }
+        ],
+        "1943": [
+          {
+            "file": "moscow_1943_01",
+            "title": "Эфир"
+          }
+        ],
+        "1944": [
+          {
+            "file": "leningrad_1944_01",
+            "title": "Эфир"
+          }
+        ],
+        "1945": [
+          {
+            "file": "moscow_1945_01",
+            "title": "Эфир"
+          }
+        ]
+      }
+    },
+    {
+      "id": "edinburgh",
+      "city": "Эдинбург",
+      "frequency": 984,
+      "bloc": "allies",
+      "countryCode": "GB",
+      "years": {
+        "1941": [
+          {
+            "file": "moscow_1941_01",
+            "title": "Эфир"
+          }
+        ],
+        "1942": [
+          {
+            "file": "leningrad_1942_01",
+            "title": "Эфир"
+          }
+        ],
+        "1943": [
+          {
+            "file": "moscow_1943_01",
+            "title": "Эфир"
+          }
+        ],
+        "1944": [
+          {
+            "file": "leningrad_1944_01",
+            "title": "Эфир"
+          }
+        ],
+        "1945": [
+          {
+            "file": "moscow_1945_01",
+            "title": "Эфир"
+          }
+        ]
+      }
+    },
+    {
+      "id": "plymouth",
+      "city": "Плимут",
+      "frequency": 1129,
+      "bloc": "allies",
+      "countryCode": "GB",
+      "years": {
+        "1941": [
+          {
+            "file": "moscow_1941_01",
+            "title": "Эфир"
+          }
+        ],
+        "1942": [
+          {
+            "file": "leningrad_1942_01",
+            "title": "Эфир"
+          }
+        ],
+        "1943": [
+          {
+            "file": "moscow_1943_01",
+            "title": "Эфир"
+          }
+        ],
+        "1944": [
+          {
+            "file": "leningrad_1944_01",
+            "title": "Эфир"
+          }
+        ],
+        "1945": [
+          {
+            "file": "moscow_1945_01",
+            "title": "Эфир"
+          }
+        ]
+      }
+    },
+    {
+      "id": "gibraltar",
+      "city": "Гибралтар",
+      "frequency": 1274,
+      "bloc": "allies",
+      "countryCode": "GI",
+      "years": {
+        "1941": [
+          {
+            "file": "moscow_1941_01",
+            "title": "Эфир"
+          }
+        ],
+        "1942": [
+          {
+            "file": "leningrad_1942_01",
+            "title": "Эфир"
+          }
+        ],
+        "1943": [
+          {
+            "file": "moscow_1943_01",
+            "title": "Эфир"
+          }
+        ],
+        "1944": [
+          {
+            "file": "leningrad_1944_01",
+            "title": "Эфир"
+          }
+        ],
+        "1945": [
+          {
+            "file": "moscow_1945_01",
+            "title": "Эфир"
+          }
+        ]
+      }
+    },
+    {
+      "id": "valetta",
+      "city": "Валлетта",
+      "frequency": 1419,
+      "bloc": "allies",
+      "countryCode": "MT",
+      "years": {
+        "1941": [
+          {
+            "file": "moscow_1941_01",
+            "title": "Эфир"
+          }
+        ],
+        "1942": [
+          {
+            "file": "leningrad_1942_01",
+            "title": "Эфир"
+          }
+        ],
+        "1943": [
+          {
+            "file": "moscow_1943_01",
+            "title": "Эфир"
+          }
+        ],
+        "1944": [
+          {
+            "file": "leningrad_1944_01",
+            "title": "Эфир"
+          }
+        ],
+        "1945": [
+          {
+            "file": "moscow_1945_01",
+            "title": "Эфир"
+          }
+        ]
+      }
+    },
+    {
+      "id": "brussels",
+      "city": "Брюссель",
+      "frequency": 1564,
+      "bloc": "allies",
+      "countryCode": "BE",
+      "years": {
+        "1941": [
+          {
+            "file": "moscow_1941_01",
+            "title": "Эфир"
+          }
+        ],
+        "1942": [
+          {
+            "file": "leningrad_1942_01",
+            "title": "Эфир"
+          }
+        ],
+        "1943": [
+          {
+            "file": "moscow_1943_01",
+            "title": "Эфир"
+          }
+        ],
+        "1944": [
+          {
+            "file": "leningrad_1944_01",
+            "title": "Эфир"
+          }
+        ],
+        "1945": [
+          {
+            "file": "moscow_1945_01",
+            "title": "Эфир"
+          }
+        ]
+      }
+    },
+    {
+      "id": "berlin",
+      "city": "Берлин",
+      "frequency": 520,
+      "bloc": "axis",
+      "countryCode": "DE",
+      "years": {
+        "1941": [
+          {
+            "file": "moscow_1941_01",
+            "title": "Эфир"
+          }
+        ],
+        "1942": [
+          {
+            "file": "leningrad_1942_01",
+            "title": "Эфир"
+          }
+        ],
+        "1943": [
+          {
+            "file": "moscow_1943_01",
+            "title": "Эфир"
+          }
+        ],
+        "1944": [
+          {
+            "file": "leningrad_1944_01",
+            "title": "Эфир"
+          }
+        ],
+        "1945": [
+          {
+            "file": "moscow_1945_01",
+            "title": "Эфир"
+          }
+        ]
+      }
+    },
+    {
+      "id": "vienna",
+      "city": "Вена",
+      "frequency": 597,
+      "bloc": "axis",
+      "countryCode": "AT",
+      "years": {
+        "1941": [
+          {
+            "file": "moscow_1941_01",
+            "title": "Эфир"
+          }
+        ],
+        "1942": [
+          {
+            "file": "leningrad_1942_01",
+            "title": "Эфир"
+          }
+        ],
+        "1943": [
+          {
+            "file": "moscow_1943_01",
+            "title": "Эфир"
+          }
+        ],
+        "1944": [
+          {
+            "file": "leningrad_1944_01",
+            "title": "Эфир"
+          }
+        ],
+        "1945": [
+          {
+            "file": "moscow_1945_01",
+            "title": "Эфир"
+          }
+        ]
+      }
+    },
+    {
+      "id": "rome",
+      "city": "Рим",
+      "frequency": 674,
+      "bloc": "axis",
+      "countryCode": "IT",
+      "years": {
+        "1941": [
+          {
+            "file": "moscow_1941_01",
+            "title": "Эфир"
+          }
+        ],
+        "1942": [
+          {
+            "file": "leningrad_1942_01",
+            "title": "Эфир"
+          }
+        ],
+        "1943": [
+          {
+            "file": "moscow_1943_01",
+            "title": "Эфир"
+          }
+        ],
+        "1944": [
+          {
+            "file": "leningrad_1944_01",
+            "title": "Эфир"
+          }
+        ],
+        "1945": [
+          {
+            "file": "moscow_1945_01",
+            "title": "Эфир"
+          }
+        ]
+      }
+    },
+    {
+      "id": "milan",
+      "city": "Милан",
+      "frequency": 751,
+      "bloc": "axis",
+      "countryCode": "IT",
+      "years": {
+        "1941": [
+          {
+            "file": "moscow_1941_01",
+            "title": "Эфир"
+          }
+        ],
+        "1942": [
+          {
+            "file": "leningrad_1942_01",
+            "title": "Эфир"
+          }
+        ],
+        "1943": [
+          {
+            "file": "moscow_1943_01",
+            "title": "Эфир"
+          }
+        ],
+        "1944": [
+          {
+            "file": "leningrad_1944_01",
+            "title": "Эфир"
+          }
+        ],
+        "1945": [
+          {
+            "file": "moscow_1945_01",
+            "title": "Эфир"
+          }
+        ]
+      }
+    },
+    {
+      "id": "oslo",
+      "city": "Осло",
+      "frequency": 828,
+      "bloc": "axis",
+      "countryCode": "NO",
+      "years": {
+        "1941": [
+          {
+            "file": "moscow_1941_01",
+            "title": "Эфир"
+          }
+        ],
+        "1942": [
+          {
+            "file": "leningrad_1942_01",
+            "title": "Эфир"
+          }
+        ],
+        "1943": [
+          {
+            "file": "moscow_1943_01",
+            "title": "Эфир"
+          }
+        ],
+        "1944": [
+          {
+            "file": "leningrad_1944_01",
+            "title": "Эфир"
+          }
+        ],
+        "1945": [
+          {
+            "file": "moscow_1945_01",
+            "title": "Эфир"
+          }
+        ]
+      }
+    },
+    {
+      "id": "copenhagen",
+      "city": "Копенгаген",
+      "frequency": 905,
+      "bloc": "axis",
+      "countryCode": "DK",
+      "years": {
+        "1941": [
+          {
+            "file": "moscow_1941_01",
+            "title": "Эфир"
+          }
+        ],
+        "1942": [
+          {
+            "file": "leningrad_1942_01",
+            "title": "Эфир"
+          }
+        ],
+        "1943": [
+          {
+            "file": "moscow_1943_01",
+            "title": "Эфир"
+          }
+        ],
+        "1944": [
+          {
+            "file": "leningrad_1944_01",
+            "title": "Эфир"
+          }
+        ],
+        "1945": [
+          {
+            "file": "moscow_1945_01",
+            "title": "Эфир"
+          }
+        ]
+      }
+    },
+    {
+      "id": "prague",
+      "city": "Прага",
+      "frequency": 984,
+      "bloc": "axis",
+      "countryCode": "CZ",
+      "years": {
+        "1941": [
+          {
+            "file": "moscow_1941_01",
+            "title": "Эфир"
+          }
+        ],
+        "1942": [
+          {
+            "file": "leningrad_1942_01",
+            "title": "Эфир"
+          }
+        ],
+        "1943": [
+          {
+            "file": "moscow_1943_01",
+            "title": "Эфир"
+          }
+        ],
+        "1944": [
+          {
+            "file": "leningrad_1944_01",
+            "title": "Эфир"
+          }
+        ],
+        "1945": [
+          {
+            "file": "moscow_1945_01",
+            "title": "Эфир"
+          }
+        ]
+      }
+    },
+    {
+      "id": "budapest",
+      "city": "Будапешт",
+      "frequency": 1129,
+      "bloc": "axis",
+      "countryCode": "HU",
+      "years": {
+        "1941": [
+          {
+            "file": "moscow_1941_01",
+            "title": "Эфир"
+          }
+        ],
+        "1942": [
+          {
+            "file": "leningrad_1942_01",
+            "title": "Эфир"
+          }
+        ],
+        "1943": [
+          {
+            "file": "moscow_1943_01",
+            "title": "Эфир"
+          }
+        ],
+        "1944": [
+          {
+            "file": "leningrad_1944_01",
+            "title": "Эфир"
+          }
+        ],
+        "1945": [
+          {
+            "file": "moscow_1945_01",
+            "title": "Эфир"
+          }
+        ]
+      }
+    },
+    {
+      "id": "warsaw",
+      "city": "Варшава",
+      "frequency": 1274,
+      "bloc": "axis",
+      "countryCode": "PL",
+      "years": {
+        "1941": [
+          {
+            "file": "moscow_1941_01",
+            "title": "Эфир"
+          }
+        ],
+        "1942": [
+          {
+            "file": "leningrad_1942_01",
+            "title": "Эфир"
+          }
+        ],
+        "1943": [
+          {
+            "file": "moscow_1943_01",
+            "title": "Эфир"
+          }
+        ],
+        "1944": [
+          {
+            "file": "leningrad_1944_01",
+            "title": "Эфир"
+          }
+        ],
+        "1945": [
+          {
+            "file": "moscow_1945_01",
+            "title": "Эфир"
+          }
+        ]
+      }
+    },
+    {
+      "id": "zagreb",
+      "city": "Загреб",
+      "frequency": 1419,
+      "bloc": "axis",
+      "countryCode": "HR",
+      "years": {
+        "1941": [
+          {
+            "file": "moscow_1941_01",
+            "title": "Эфир"
+          }
+        ],
+        "1942": [
+          {
+            "file": "leningrad_1942_01",
+            "title": "Эфир"
+          }
+        ],
+        "1943": [
+          {
+            "file": "moscow_1943_01",
+            "title": "Эфир"
+          }
+        ],
+        "1944": [
+          {
+            "file": "leningrad_1944_01",
+            "title": "Эфир"
+          }
+        ],
+        "1945": [
+          {
+            "file": "moscow_1945_01",
+            "title": "Эфир"
+          }
+        ]
+      }
+    },
+    {
+      "id": "sofia",
+      "city": "София",
+      "frequency": 1564,
+      "bloc": "axis",
+      "countryCode": "BG",
+      "years": {
+        "1941": [
+          {
+            "file": "moscow_1941_01",
+            "title": "Эфир"
+          }
+        ],
+        "1942": [
+          {
+            "file": "leningrad_1942_01",
+            "title": "Эфир"
+          }
+        ],
+        "1943": [
+          {
+            "file": "moscow_1943_01",
+            "title": "Эфир"
+          }
+        ],
+        "1944": [
+          {
+            "file": "leningrad_1944_01",
+            "title": "Эфир"
+          }
+        ],
+        "1945": [
+          {
+            "file": "moscow_1945_01",
             "title": "Эфир"
           }
         ]
@@ -608,11 +1295,100 @@
       "maxKhz": 948,
       "overridesStationCapture": true,
       "years": {
-        "1941": [{ "file": "moscow_1941_01", "title": "Чужая волна" }],
-        "1942": [{ "file": "moscow_1942_01", "title": "Помехи и голос" }],
-        "1943": [{ "file": "moscow_1943_01", "title": "Ночной эфир" }],
-        "1944": [{ "file": "moscow_1944_01", "title": "Сигнал" }],
-        "1945": [{ "file": "moscow_1945_01", "title": "Последний перехват" }]
+        "1941": [
+          {
+            "file": "moscow_1941_01",
+            "title": "Чужая волна"
+          }
+        ],
+        "1942": [
+          {
+            "file": "moscow_1942_01",
+            "title": "Чужая волна"
+          }
+        ],
+        "1943": [
+          {
+            "file": "moscow_1943_01",
+            "title": "Чужая волна"
+          }
+        ],
+        "1944": [
+          {
+            "file": "moscow_1944_01",
+            "title": "Чужая волна"
+          }
+        ],
+        "1945": [
+          {
+            "file": "moscow_1945_01",
+            "title": "Чужая волна"
+          }
+        ]
+      }
+    },
+    {
+      "id": "secret_ussr_1941_a",
+      "minKhz": 738,
+      "maxKhz": 744,
+      "bloc": "ussr",
+      "anonymous": true,
+      "overridesStationCapture": true,
+      "years": {
+        "1941": [
+          {
+            "file": "moscow_1941_01",
+            "title": "Эфир"
+          }
+        ]
+      }
+    },
+    {
+      "id": "secret_ussr_1941_b",
+      "minKhz": 1388,
+      "maxKhz": 1394,
+      "bloc": "ussr",
+      "anonymous": true,
+      "overridesStationCapture": true,
+      "years": {
+        "1941": [
+          {
+            "file": "leningrad_1942_01",
+            "title": "Эфир"
+          }
+        ]
+      }
+    },
+    {
+      "id": "secret_axis_1945_a",
+      "minKhz": 660,
+      "maxKhz": 666,
+      "bloc": "axis",
+      "anonymous": true,
+      "overridesStationCapture": true,
+      "years": {
+        "1945": [
+          {
+            "file": "moscow_1945_01",
+            "title": "Эфир"
+          }
+        ]
+      }
+    },
+    {
+      "id": "secret_axis_1945_b",
+      "minKhz": 1010,
+      "maxKhz": 1016,
+      "bloc": "axis",
+      "anonymous": true,
+      "overridesStationCapture": true,
+      "years": {
+        "1945": [
+          {
+            "file": "leningrad_1944_01",
+            "title": "Эфир"
+          }
+        ]
       }
     }
   ]

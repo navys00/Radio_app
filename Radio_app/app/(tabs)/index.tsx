@@ -1,5 +1,1 @@
-import { HomeScreen } from '@/src/screens/HomeScreen';
-
-export default function IndexScreen() {
-  return <HomeScreen />;
-}
+export { default } from './home-tab/HomeTab';

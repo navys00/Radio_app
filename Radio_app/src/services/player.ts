@@ -15,7 +15,7 @@ import {
   type OffSlotHysteresisState,
   type TunedSource,
 } from '@/src/data/radioData';
-import type { RadioYear, StationTrack } from '@/src/types/radio';
+import type { BroadcastBloc, RadioYear, Station, StationTrack } from '@/src/types/radio';
 import {
   isNativeAudioPlaybackSupported,
   resolvePlaybackUrl,
@@ -136,7 +136,9 @@ export async function playSourceAtFrequency(frequency: number, year: RadioYear, 
   const meta =
     source.kind === 'station'
       ? `${source.station.city} ${source.station.frequency} кГц`
-      : `Слот ${source.slot.minKhz}–${source.slot.maxKhz} кГц`;
+      : source.slot.anonymous
+        ? 'Радио ЭФИР'
+        : `Слот ${source.slot.minKhz}–${source.slot.maxKhz} кГц`;
 
   await TrackPlayer.reset();
   await TrackPlayer.add(
@@ -160,11 +162,19 @@ export async function playNoise(city = 'Пусто', frequencyText = '', year?: 
 export async function switchFrequency(
   frequency: number,
   year: RadioYear,
-  opts?: { force?: boolean },
+  opts?: { force?: boolean; visibleStations: Station[]; bloc: BroadcastBloc },
 ): Promise<void> {
   if (!isNativeAudioPlaybackSupported()) return;
   const freq = clampFrequencyKhz(frequency);
-  const { source, nextOffState } = resolveTunedSource(freq, offSlotPlaybackState);
+  const candidates = opts?.visibleStations ?? [];
+  const bloc = opts?.bloc ?? 'ussr';
+  const { source, nextOffState } = resolveTunedSource(
+    freq,
+    offSlotPlaybackState,
+    candidates,
+    bloc,
+    year,
+  );
   const nextKey = playbackKeyFromSource(source, freq, year);
   if (!opts?.force && lastPlaybackTargetKey !== null && nextKey === lastPlaybackTargetKey) {
     return;
@@ -180,11 +190,16 @@ export async function switchFrequency(
   await playSourceAtFrequency(freq, year, source);
 }
 
-export async function togglePlayPause(frequency: number, year: RadioYear): Promise<void> {
+export async function togglePlayPause(
+  frequency: number,
+  year: RadioYear,
+  visibleStations: Station[],
+  bloc: BroadcastBloc,
+): Promise<void> {
   if (!isNativeAudioPlaybackSupported()) return;
   const { state } = await TrackPlayer.getPlaybackState();
   if (state === State.Stopped || state === State.None) {
-    await switchFrequency(frequency, year, { force: true });
+    await switchFrequency(frequency, year, { force: true, visibleStations, bloc });
     return;
   }
   if (state === State.Playing) {
