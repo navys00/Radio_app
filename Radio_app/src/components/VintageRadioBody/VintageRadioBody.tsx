@@ -33,15 +33,13 @@ export function VintageRadioBody({ children, warmupComplete, onWarmupComplete }:
 
   return (
     <View style={styles.bg}>
-      <View style={styles.woodBase} />
-      <View style={styles.woodPanelLeft} />
-      <View style={styles.woodPanelRight} />
-      <View style={styles.brassTop} />
-      <View style={styles.brassBottom} />
-      <View style={styles.brassCornerTL} />
-      <View style={styles.brassCornerTR} />
-      <View style={styles.grille} pointerEvents="none" />
-      <View style={styles.content}>{children}</View>
+      <View style={styles.bgDots} pointerEvents="none" />
+      <View style={styles.stage}>
+        <View style={styles.radioBody}>
+          <View style={styles.radioBodyInner} pointerEvents="none" />
+          <View style={styles.content}>{children}</View>
+        </View>
+      </View>
       <Animated.View style={[styles.warmupOverlay, overlayStyle]} pointerEvents="none" />
     </View>
   );

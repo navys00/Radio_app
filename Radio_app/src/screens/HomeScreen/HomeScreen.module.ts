@@ -10,6 +10,26 @@ export const styles = StyleSheet.create({
   root: {
     flexGrow: 1,
   },
+  header: {
+    alignItems: 'center',
+    paddingTop: 4,
+    paddingBottom: 14,
+  },
+  title: {
+    color: '#d8c3a5',
+    fontSize: 26,
+    letterSpacing: 3.2,
+    textTransform: 'uppercase',
+    fontFamily: 'Georgia',
+    textAlign: 'center',
+  },
+  subtitle: {
+    color: '#b89b78',
+    fontSize: 14,
+    letterSpacing: 4.2,
+    marginTop: 6,
+    textAlign: 'center',
+  },
   landscapeRow: {
     flexDirection: 'row',
     alignItems: 'flex-start',
@@ -27,57 +47,123 @@ export const styles = StyleSheet.create({
     paddingTop: 4,
     gap: 12,
   },
-  topRow: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-  },
-  topSpacer: { flex: 1 },
   blocRow: {
     flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'center',
-    gap: 8,
-    paddingTop: 8,
+    borderRadius: 18,
+    overflow: 'hidden',
+    backgroundColor: '#1e1712',
+    borderWidth: 1,
+    borderColor: 'rgba(133,101,67,0.65)',
+    marginTop: 6,
   },
   yearRow: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'center',
     gap: 8,
-    paddingTop: 8,
+    marginTop: 10,
   },
-  yearChip: {
-    paddingVertical: 6,
-    paddingHorizontal: 12,
-    borderRadius: 4,
-    borderWidth: StyleSheet.hairlineWidth,
-    borderColor: 'rgba(62, 48, 32, 0.45)',
-    backgroundColor: 'rgba(245, 236, 216, 0.35)',
+  buttonPressed: {
+    opacity: 0.88,
   },
-  yearChipActive: {
-    backgroundColor: 'rgba(62, 48, 32, 0.88)',
-    borderColor: 'rgba(62, 48, 32, 0.88)',
+  blocButton: {
+    flex: 1,
+    paddingVertical: 14,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
-  yearChipPressed: {
-    opacity: 0.85,
+  blocButtonText: {
+    color: '#b89b78',
+    fontSize: 13,
+    letterSpacing: 1.1,
+    textTransform: 'uppercase',
   },
-  yearChipText: {
+  blocButtonActiveUssr: {
+    backgroundColor: '#3b0b08',
+  },
+  blocButtonTextActiveUssr: {
+    color: '#ffd9a0',
+  },
+  blocButtonActiveAxis: {
+    backgroundColor: '#1f1f1f',
+  },
+  blocButtonTextActiveAxis: {
+    color: '#f3e4c5',
+  },
+  blocButtonActiveAllies: {
+    backgroundColor: '#0d2238',
+  },
+  blocButtonTextActiveAllies: {
+    color: '#d8e7ff',
+  },
+  yearButton: {
+    width: 56,
+    height: 56,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#1e1712',
+    borderWidth: 1,
+    borderColor: 'rgba(133,101,67,0.55)',
+  },
+  yearButtonActive: {
+    backgroundColor: '#c79852',
+    borderColor: 'rgba(0,0,0,0.25)',
+  },
+  yearButtonText: {
+    color: '#b89b78',
+    fontSize: 16,
     fontFamily: 'Georgia',
-    fontSize: 14,
-    letterSpacing: 0.5,
-    color: 'rgba(62, 48, 32, 0.92)',
+    letterSpacing: 0.4,
   },
-  yearChipTextActive: {
-    color: '#f5ecd8',
+  yearButtonTextActive: {
+    color: '#1d140e',
   },
   scaleWrap: {
     position: 'relative',
     marginTop: 16,
-    paddingHorizontal: 8,
+    paddingHorizontal: 6,
   },
   pointerOverlay: {
     ...StyleSheet.absoluteFillObject,
     justifyContent: 'flex-end',
+  },
+  stationList: {
+    marginTop: 14,
+    gap: 10,
+  },
+  stationCard: {
+    borderRadius: 18,
+    paddingHorizontal: 14,
+    paddingVertical: 14,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    backgroundColor: 'rgba(18,14,11,0.95)',
+    borderWidth: 1,
+    borderColor: 'rgba(141,107,71,0.35)',
+  },
+  stationLeft: {
+    minWidth: 0,
+    flexShrink: 1,
+  },
+  stationCity: {
+    color: '#f2dfc2',
+    fontSize: 18,
+    fontFamily: 'Georgia',
+  },
+  stationBloc: {
+    color: '#8e775b',
+    fontSize: 11,
+    letterSpacing: 1.2,
+    textTransform: 'uppercase',
+    marginTop: 4,
+  },
+  stationFreq: {
+    color: '#d8c3a5',
+    fontSize: 14,
+    fontVariant: ['tabular-nums'],
+    marginLeft: 10,
   },
   knobRow: {
     flexDirection: 'row',

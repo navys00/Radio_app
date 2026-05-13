@@ -81,12 +81,12 @@ export function HomeScreen() {
             accessibilityLabel={`Год эфира ${y}`}
             onPress={() => void setYear(y)}
             style={({ pressed }) => [
-              styles.yearChip,
-              active && styles.yearChipActive,
-              pressed && styles.yearChipPressed,
+              styles.yearButton,
+              active && styles.yearButtonActive,
+              pressed && styles.buttonPressed,
             ]}
           >
-            <Text style={[styles.yearChipText, active && styles.yearChipTextActive]}>{y}</Text>
+            <Text style={[styles.yearButtonText, active && styles.yearButtonTextActive]}>{y}</Text>
           </Pressable>
         );
       })}
@@ -105,17 +105,50 @@ export function HomeScreen() {
             accessibilityLabel={`Блок эфира: ${label}`}
             onPress={() => void setBloc(id)}
             style={({ pressed }) => [
-              styles.yearChip,
-              active && styles.yearChipActive,
-              pressed && styles.yearChipPressed,
+              styles.blocButton,
+              active && (id === 'ussr'
+                ? styles.blocButtonActiveUssr
+                : id === 'axis'
+                  ? styles.blocButtonActiveAxis
+                  : styles.blocButtonActiveAllies),
+              pressed && styles.buttonPressed,
             ]}
           >
-            <Text style={[styles.yearChipText, active && styles.yearChipTextActive]}>{label}</Text>
+            <Text
+              style={[
+                styles.blocButtonText,
+                active && (id === 'ussr'
+                  ? styles.blocButtonTextActiveUssr
+                  : id === 'axis'
+                    ? styles.blocButtonTextActiveAxis
+                    : styles.blocButtonTextActiveAllies),
+              ]}
+            >
+              {label}
+            </Text>
           </Pressable>
         );
       })}
     </View>
   );
+
+  const stationCards = useMemo(() => {
+    const selectedBlocLabel = BROADCAST_BLOC_OPTIONS.find((b) => b.id === bloc)?.label ?? 'Эфир';
+    const list = [...visibleStations].sort((a, b) => a.frequency - b.frequency).slice(0, 6);
+    return (
+      <View style={[styles.stationList, { paddingHorizontal: padH }]}>
+        {list.map((s) => (
+          <View key={s.id} style={styles.stationCard}>
+            <View style={styles.stationLeft}>
+              <Text style={styles.stationCity}>{s.city}</Text>
+              <Text style={styles.stationBloc}>{selectedBlocLabel}</Text>
+            </View>
+            <Text style={styles.stationFreq}>{`${s.frequency} кГц`}</Text>
+          </View>
+        ))}
+      </View>
+    );
+  }, [bloc, padH, visibleStations]);
 
   const scaleBlock = (
     <View style={styles.scaleWrap}>
@@ -152,13 +185,14 @@ export function HomeScreen() {
 
   const portraitBody = (
     <>
-      <View style={[styles.topRow, { paddingHorizontal: padH }]}>
-        <View style={styles.topSpacer} />
-        <TubeLamp warmupComplete={warmupDone} />
+      <View style={[styles.header, { paddingHorizontal: padH }]}>
+        <Text style={styles.title}>Историческое Радио</Text>
+        <Text style={styles.subtitle}>1941–1945</Text>
       </View>
       {blocRow}
       {yearRow}
       {scaleBlock}
+      {stationCards}
       {knobs}
     </>
   );
@@ -166,9 +200,14 @@ export function HomeScreen() {
   const landscapeBody = (
     <View style={styles.landscapeRow}>
       <View style={[styles.landscapeMain, { paddingLeft: padH }]}>
+        <View style={styles.header}>
+          <Text style={styles.title}>Историческое Радио</Text>
+          <Text style={styles.subtitle}>1941–1945</Text>
+        </View>
         {blocRow}
         {yearRow}
         {scaleBlock}
+        {stationCards}
       </View>
       <View style={[styles.landscapeSide, { paddingRight: padH }]}>
         <TubeLamp warmupComplete={warmupDone} />
