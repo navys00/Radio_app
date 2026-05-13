@@ -7,6 +7,8 @@ export type Station = {
   khz: number;
   /** Годы, в которые станция «в эфире» для текущего сценария */
   years: string[];
+  /** Стабильный id трека в `audioMap` (один трек на станцию для MVP). */
+  audioId: string;
 };
 
 export type StationsByBlock = Record<MilitaryBlock, Station[]>;

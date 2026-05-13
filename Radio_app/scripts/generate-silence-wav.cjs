@@ -1,7 +1,7 @@
 const fs = require('node:fs');
 const path = require('node:path');
 
-const outDir = path.join(__dirname, '..', 'assets', 'audio');
+const outDir = path.join(__dirname, '..', 'assets', 'audio', 'radio-noise');
 const outPath = path.join(outDir, 'silence.wav');
 
 const sampleRate = 8000;

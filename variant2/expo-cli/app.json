@@ -13,7 +13,10 @@
       "backgroundColor": "#ffffff"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "infoPlist": {
+        "UIBackgroundModes": ["audio"]
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -27,7 +30,8 @@
       "favicon": "./assets/favicon.png"
     },
     "plugins": [
-      "expo-font"
+      "expo-font",
+      "expo-av"
     ]
   }
 }

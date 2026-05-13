@@ -13,18 +13,27 @@ import {
 } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import { LinearGradient } from 'expo-linear-gradient';
+import { validateStationAudioReferences } from './audio/audioMap';
 import { Knob } from './components/Knob';
+import { PowerToggle } from './components/PowerToggle';
+import { useRadioPlayback } from './hooks/useRadioPlayback';
 import { styles } from './styles';
 import stationsRaw from './data/stations.json';
 import type { MilitaryBlock, StationsByBlock } from './types';
 import {
-  findNearestStation,
+  findNearestStationIfCaptured,
   khzFromTuningPercent,
   stationKey,
   tuningPercentFromWaveRotation,
 } from './tuning';
 
 const STATIONS_BY_BLOCK = stationsRaw as StationsByBlock;
+
+const ALL_STATIONS_FLAT = [
+  ...STATIONS_BY_BLOCK['СССР'],
+  ...STATIONS_BY_BLOCK['ОСЬ'],
+  ...STATIONS_BY_BLOCK['Союзники'],
+];
 
 export default function HistoricalRadioApp() {
   const [waveRotation, setWaveRotation] = useState(-40);
@@ -35,6 +44,7 @@ export default function HistoricalRadioApp() {
 
   const [selectedBlock, setSelectedBlock] = useState<MilitaryBlock>('СССР');
   const [selectedYear, setSelectedYear] = useState('1943');
+  const [isRadioOn, setIsRadioOn] = useState(true);
 
   const militaryBlocks = useMemo(() => ['СССР', 'ОСЬ', 'Союзники'] as const, []);
   const years = useMemo(() => ['1941', '1942', '1943', '1944', '1945'] as const, []);
@@ -52,9 +62,21 @@ export default function HistoricalRadioApp() {
   const tuningKhz = useMemo(() => khzFromTuningPercent(frequencyPosition), [frequencyPosition]);
 
   const nearestStation = useMemo(
-    () => findNearestStation(stations, tuningKhz),
+    () => findNearestStationIfCaptured(stations, tuningKhz),
     [stations, tuningKhz]
   );
+
+  useEffect(() => {
+    if (__DEV__) {
+      validateStationAudioReferences(ALL_STATIONS_FLAT);
+    }
+  }, []);
+
+  useRadioPlayback({
+    capturedStation: nearestStation,
+    volumeRotation,
+    powerOn: isRadioOn,
+  });
 
   const lastSnapKeyRef = useRef<string | null>(null);
 
@@ -65,6 +87,7 @@ export default function HistoricalRadioApp() {
     }
     const key = nearestStation ? stationKey(nearestStation) : null;
     if (
+      isRadioOn &&
       Platform.OS !== 'web' &&
       key !== null &&
       lastSnapKeyRef.current !== null &&
@@ -73,7 +96,7 @@ export default function HistoricalRadioApp() {
       void Haptics.selectionAsync();
     }
     lastSnapKeyRef.current = key;
-  }, [nearestStation, stations.length]);
+  }, [nearestStation, stations.length, isRadioOn]);
 
   useEffect(() => {
     Animated.timing(animatedFrequency, {
@@ -105,13 +128,15 @@ export default function HistoricalRadioApp() {
         ? styles.blockActiveAxis
         : styles.blockActiveAllies;
 
+  const dialGlow = isRadioOn ? 1 : 0.11;
+
   return (
     <SafeAreaView style={styles.screen}>
       <ScrollView contentContainerStyle={styles.scroll}>
         <View style={styles.radioBody}>
           <LinearGradient
             colors={['rgba(255,180,90,0.08)', 'rgba(0,0,0,0)']}
-            style={styles.bodyRadialLike}
+            style={[styles.bodyRadialLike, { opacity: dialGlow }]}
             pointerEvents="none"
           />
 
@@ -128,7 +153,7 @@ export default function HistoricalRadioApp() {
 
           <View style={styles.innerPad}>
             <View style={styles.titleWrap}>
-              <Text style={styles.title}>Фестиваль</Text>
+              <Text style={[styles.title, !isRadioOn ? styles.titleLightsOff : null]}>Фестиваль</Text>
             </View>
 
             <View style={styles.scale}>
@@ -140,9 +165,9 @@ export default function HistoricalRadioApp() {
               <View style={styles.scaleInnerShadow} pointerEvents="none" />
 
               <View style={styles.scaleTopRow}>
-                <Text style={styles.scaleBand}>LW</Text>
-                <Text style={styles.scaleBand}>MW</Text>
-                <Text style={styles.scaleBand}>SW</Text>
+                <Text style={[styles.scaleBand, !isRadioOn ? styles.scaleTextDim : null]}>LW</Text>
+                <Text style={[styles.scaleBand, !isRadioOn ? styles.scaleTextDim : null]}>MW</Text>
+                <Text style={[styles.scaleBand, !isRadioOn ? styles.scaleTextDim : null]}>SW</Text>
               </View>
 
               <View style={styles.scaleTicksWrap} onLayout={onScaleLayout}>
@@ -150,7 +175,11 @@ export default function HistoricalRadioApp() {
                   {Array.from({ length: 32 }).map((_, i) => (
                     <View
                       key={i}
-                      style={[styles.tick, i % 4 === 0 ? styles.tickMajor : styles.tickMinor]}
+                      style={[
+                        styles.tick,
+                        i % 4 === 0 ? styles.tickMajor : styles.tickMinor,
+                        { opacity: isRadioOn ? 1 : 0.38 },
+                      ]}
                     />
                   ))}
                 </View>
@@ -160,14 +189,14 @@ export default function HistoricalRadioApp() {
                     styles.slider,
                     {
                       transform: [{ translateX: sliderTranslateX }],
-                      opacity: scaleWidth > 0 ? 1 : 0,
+                      opacity: (scaleWidth > 0 ? 1 : 0) * dialGlow,
                     },
                   ]}
                 />
 
                 <View style={styles.scaleBottomRow}>
                   {['150', '300', '600', '1000', '1400'].map((t) => (
-                    <Text key={t} style={styles.scaleNumber}>
+                    <Text key={t} style={[styles.scaleNumber, !isRadioOn ? styles.scaleTextDim : null]}>
                       {t}
                     </Text>
                   ))}
@@ -179,10 +208,10 @@ export default function HistoricalRadioApp() {
                 locations={[0, 0.42, 1]}
                 start={{ x: 0.1, y: 0 }}
                 end={{ x: 0.85, y: 1 }}
-                style={styles.scaleGlassSheen}
+                style={[styles.scaleGlassSheen, { opacity: 0.95 * dialGlow }]}
                 pointerEvents="none"
               />
-              <View style={styles.scaleGlassMist} pointerEvents="none" />
+              <View style={[styles.scaleGlassMist, { opacity: isRadioOn ? 1 : 0.12 }]} pointerEvents="none" />
             </View>
 
             <View style={styles.panel}>
@@ -249,7 +278,9 @@ export default function HistoricalRadioApp() {
               ) : (
                 stations.map((s) => {
                   const isTuned =
-                    nearestStation !== null && stationKey(s) === stationKey(nearestStation);
+                    isRadioOn &&
+                    nearestStation !== null &&
+                    stationKey(s) === stationKey(nearestStation);
                   return (
                     <View
                       key={`${selectedBlock}-${selectedYear}-${s.city}-${s.khz}`}
@@ -280,13 +311,17 @@ export default function HistoricalRadioApp() {
 
             <View style={styles.knobsRow}>
               <View style={styles.knobCol}>
-                <Knob rotation={waveRotation} onRotate={onWaveRotate} />
-                <Text style={styles.knobLabel}>Волна</Text>
+                <Knob rotation={waveRotation} onRotate={onWaveRotate} disabled={!isRadioOn} />
+                <Text style={[styles.knobLabel, !isRadioOn ? styles.knobLabelDim : null]}>Волна</Text>
+              </View>
+
+              <View style={styles.powerCol}>
+                <PowerToggle on={isRadioOn} onPress={() => setIsRadioOn((v) => !v)} />
               </View>
 
               <View style={styles.knobCol}>
-                <Knob rotation={volumeRotation} onRotate={setVolumeRotation} />
-                <Text style={styles.knobLabel}>Громкость</Text>
+                <Knob rotation={volumeRotation} onRotate={setVolumeRotation} disabled={!isRadioOn} />
+                <Text style={[styles.knobLabel, !isRadioOn ? styles.knobLabelDim : null]}>Громкость</Text>
               </View>
             </View>
           </View>

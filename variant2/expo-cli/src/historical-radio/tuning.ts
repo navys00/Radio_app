@@ -42,3 +42,20 @@ export function findNearestStation(stations: Station[], targetKhz: number): Stat
   }
   return best;
 }
+
+/** Максимум отклонения по шкале (кГц), при котором станция считается «пойманной» для эфира и плеера. */
+export const STATION_CAPTURE_MAX_DELTA_KHZ = 55;
+
+/**
+ * Ближайшая станция только если расстояние по частоте не превышает порог;
+ * иначе «между станциями» (шум, без эфира).
+ */
+export function findNearestStationIfCaptured(
+  stations: Station[],
+  targetKhz: number,
+  maxDeltaKhz: number = STATION_CAPTURE_MAX_DELTA_KHZ
+): Station | null {
+  const nearest = findNearestStation(stations, targetKhz);
+  if (!nearest) return null;
+  return Math.abs(nearest.khz - targetKhz) <= maxDeltaKhz ? nearest : null;
+}

@@ -4,7 +4,7 @@ import type { StationsConfig } from '@/src/types/radio';
 
 export const STATIC_NOISE_FILE = 'static';
 
-const silenceWavModule = require('../../assets/audio/silence.wav') as number;
+const silenceWavModule = require('../../assets/audio/radio-noise/silence.wav') as number;
 
 const knownAudioIds = new Set<string>([STATIC_NOISE_FILE]);
 
@@ -33,7 +33,7 @@ function resolveIosBundledUri(): string {
   const resolved = Image.resolveAssetSource(silenceWavModule);
   const uri = resolved?.uri;
   if (!uri) {
-    throw new Error('Bundled assets/audio/silence.wav is missing or could not be resolved');
+    throw new Error('Bundled assets/audio/radio-noise/silence.wav is missing or could not be resolved');
   }
   return uri;
 }

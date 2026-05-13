@@ -12,9 +12,12 @@ function degreesFromCenter(centerX: number, centerY: number, x: number, y: numbe
 export function Knob({
   rotation,
   onRotate,
+  disabled = false,
 }: {
   rotation: number;
   onRotate: (deg: number) => void;
+  /** Без жестов и с приглушённым видом (радио выключено). */
+  disabled?: boolean;
 }) {
   const knobRef = useRef<View>(null);
   const centerRef = useRef<{ x: number; y: number } | null>(null);
@@ -32,14 +35,16 @@ export function Knob({
   const panResponder = useMemo(
     () =>
       PanResponder.create({
-        onStartShouldSetPanResponder: () => true,
-        onMoveShouldSetPanResponder: () => true,
+        onStartShouldSetPanResponder: () => !disabled,
+        onMoveShouldSetPanResponder: () => !disabled,
         onPanResponderGrant: () => {
+          if (disabled) return;
           knobRef.current?.measureInWindow((x, y, w, h) => {
             centerRef.current = { x: x + w / 2, y: y + h / 2 };
           });
         },
         onPanResponderMove: (_evt, gesture) => {
+          if (disabled) return;
           const center = centerRef.current;
           if (!center) return;
 
@@ -48,7 +53,7 @@ export function Knob({
           onRotate(normalized);
         },
       }),
-    [onRotate]
+    [disabled, onRotate]
   );
 
   const indicatorRotation = animatedRotation.interpolate({
@@ -57,7 +62,12 @@ export function Knob({
   });
 
   return (
-    <View ref={knobRef} {...panResponder.panHandlers} style={styles.knobOuter}>
+    <View
+      ref={knobRef}
+      {...(disabled ? {} : panResponder.panHandlers)}
+      style={[styles.knobOuter, disabled ? styles.knobOuterDisabled : null]}
+      pointerEvents={disabled ? 'none' : 'auto'}
+    >
       <LinearGradient
         colors={['#806246', '#3d2f23', '#16110e']}
         locations={[0, 0.4, 1]}

@@ -92,6 +92,10 @@ export const styles = StyleSheet.create({
     textShadowOffset: { width: 0, height: 3 },
     textShadowRadius: 8,
   },
+  titleLightsOff: {
+    opacity: 0.32,
+    textShadowRadius: 2,
+  },
   scale: {
     borderRadius: 24,
     padding: 16,
@@ -182,6 +186,9 @@ export const styles = StyleSheet.create({
     fontFamily: 'Oswald_400Regular',
     fontSize: 11,
     letterSpacing: 0.7,
+  },
+  scaleTextDim: {
+    opacity: 0.35,
   },
   scaleGlassSheen: {
     position: 'absolute',
@@ -386,11 +393,112 @@ export const styles = StyleSheet.create({
   },
   knobsRow: {
     flexDirection: 'row',
+    alignItems: 'flex-end',
     justifyContent: 'space-between',
   },
   knobCol: {
+    flex: 1,
     alignItems: 'center',
     gap: 10,
+  },
+  powerCol: {
+    width: 76,
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+    paddingBottom: 4,
+  },
+  powerPressable: {
+    alignItems: 'center',
+  },
+  powerPressablePressed: {
+    opacity: 0.88,
+    transform: [{ translateY: 1 }],
+  },
+  powerHousing: {
+    width: 62,
+    height: 36,
+    borderRadius: 9,
+    borderWidth: 2,
+    borderTopColor: '#7a5c40',
+    borderLeftColor: '#5c4430',
+    borderRightColor: '#1c1410',
+    borderBottomColor: '#0c0806',
+    overflow: 'hidden',
+    justifyContent: 'center',
+    backgroundColor: '#16110e',
+    shadowColor: '#000',
+    shadowOpacity: 0.55,
+    shadowRadius: 8,
+    shadowOffset: { width: 0, height: 4 },
+    elevation: 5,
+  },
+  powerHousingGradient: {
+    ...StyleSheet.absoluteFillObject,
+    borderRadius: 7,
+  },
+  powerBevel: {
+    ...StyleSheet.absoluteFillObject,
+    borderRadius: 7,
+    borderTopWidth: 1,
+    borderTopColor: 'rgba(255,220,180,0.06)',
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(0,0,0,0.35)',
+  },
+  powerTrack: {
+    alignSelf: 'center',
+    width: 48,
+    height: 14,
+    borderRadius: 4,
+    backgroundColor: '#050403',
+    borderWidth: 1,
+    borderTopColor: 'rgba(0,0,0,0.85)',
+    borderLeftColor: 'rgba(0,0,0,0.5)',
+    borderRightColor: 'rgba(255,200,140,0.06)',
+    borderBottomColor: 'rgba(255,220,200,0.04)',
+    position: 'relative',
+    justifyContent: 'center',
+  },
+  powerThumb: {
+    position: 'absolute',
+    top: 2,
+    width: 22,
+    height: 10,
+    borderRadius: 3,
+    borderWidth: 1,
+    borderTopColor: 'rgba(255,240,210,0.35)',
+    borderLeftColor: 'rgba(255,240,210,0.12)',
+    borderRightColor: 'rgba(0,0,0,0.45)',
+    borderBottomColor: 'rgba(0,0,0,0.55)',
+    overflow: 'hidden',
+  },
+  powerThumbOff: {
+    left: 2,
+  },
+  powerThumbOn: {
+    left: 24,
+  },
+  powerStateLabel: {
+    marginTop: 6,
+    fontFamily: 'Oswald_600SemiBold',
+    fontSize: 11,
+    letterSpacing: 2,
+  },
+  powerStateLabelOn: {
+    color: '#c9f0c4',
+    textShadowColor: 'rgba(80, 200, 90, 0.35)',
+    textShadowOffset: { width: 0, height: 0 },
+    textShadowRadius: 8,
+  },
+  powerStateLabelOff: {
+    color: '#6a5a4a',
+  },
+  powerCaption: {
+    marginTop: 2,
+    fontFamily: 'Oswald_400Regular',
+    fontSize: 9,
+    letterSpacing: 2.2,
+    textTransform: 'uppercase',
+    color: 'rgba(184,155,120,0.65)',
   },
   knobOuter: {
     width: 112,
@@ -410,6 +518,9 @@ export const styles = StyleSheet.create({
     shadowRadius: 16,
     shadowOffset: { width: 0, height: 10 },
     elevation: 8,
+  },
+  knobOuterDisabled: {
+    opacity: 0.38,
   },
   knobGradient: {
     ...StyleSheet.absoluteFillObject,
@@ -474,6 +585,9 @@ export const styles = StyleSheet.create({
     textShadowColor: 'rgba(0,0,0,0.75)',
     textShadowOffset: { width: 0, height: 1 },
     textShadowRadius: 2,
+  },
+  knobLabelDim: {
+    opacity: 0.35,
   },
 });
 
