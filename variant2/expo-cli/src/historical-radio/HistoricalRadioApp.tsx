@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   Animated,
   Easing,
@@ -13,7 +13,8 @@ import {
 } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import { LinearGradient } from 'expo-linear-gradient';
-import { validateStationAudioReferences } from './audio/audioMap';
+import { validateStationAudioReferences, NOISE_LOOP_AUDIO_ID } from './audio/audioMap';
+import { resolvePlaybackTrackId } from './audio/resolvePlaybackTrack';
 import { Knob } from './components/Knob';
 import { PowerToggle } from './components/PowerToggle';
 import { useRadioPlayback } from './hooks/useRadioPlayback';
@@ -24,8 +25,24 @@ import {
   findNearestStationIfCaptured,
   khzFromTuningPercent,
   stationKey,
+  tuningPercentFromKhz,
   tuningPercentFromWaveRotation,
 } from './tuning';
+
+const SCALE_MARK_KHZ = [150, 300, 600, 1000, 1400] as const;
+
+type CaptureLeadIn = null | 'hiss' | 'tuning';
+
+/** Обычная станция: с равной вероятностью hiss, tuning или без вступления. Секретная — всегда hiss или tuning. */
+function rollCaptureLeadIn(isSecret: boolean): CaptureLeadIn {
+  const r = Math.random();
+  if (isSecret) {
+    return r < 0.5 ? 'hiss' : 'tuning';
+  }
+  if (r < 1 / 3) return 'hiss';
+  if (r < 2 / 3) return 'tuning';
+  return null;
+}
 
 const STATIONS_BY_BLOCK = stationsRaw as StationsByBlock;
 
@@ -38,13 +55,17 @@ const ALL_STATIONS_FLAT = [
 export default function HistoricalRadioApp() {
   const [waveRotation, setWaveRotation] = useState(-40);
   const [volumeRotation, setVolumeRotation] = useState(30);
-  const [frequencyPosition, setFrequencyPosition] = useState(50);
+  const [frequencyPosition, setFrequencyPosition] = useState(() =>
+    tuningPercentFromWaveRotation(-40)
+  );
   const [scaleWidth, setScaleWidth] = useState(0);
   const animatedFrequency = useRef(new Animated.Value(50)).current;
 
   const [selectedBlock, setSelectedBlock] = useState<MilitaryBlock>('СССР');
   const [selectedYear, setSelectedYear] = useState('1943');
   const [isRadioOn, setIsRadioOn] = useState(true);
+  const [captureLeadIn, setCaptureLeadIn] = useState<CaptureLeadIn>(null);
+  const prevStationKeyRef = useRef<string | null | undefined>(undefined);
 
   const militaryBlocks = useMemo(() => ['СССР', 'ОСЬ', 'Союзники'] as const, []);
   const years = useMemo(() => ['1941', '1942', '1943', '1944', '1945'] as const, []);
@@ -59,6 +80,8 @@ export default function HistoricalRadioApp() {
     [stationsAll, selectedYear]
   );
 
+  const stationsVisible = useMemo(() => stations.filter((s) => !s.secret), [stations]);
+
   const tuningKhz = useMemo(() => khzFromTuningPercent(frequencyPosition), [frequencyPosition]);
 
   const nearestStation = useMemo(
@@ -72,10 +95,65 @@ export default function HistoricalRadioApp() {
     }
   }, []);
 
+  const resolvedPlaybackId = useMemo(() => {
+    if (!nearestStation) return NOISE_LOOP_AUDIO_ID;
+    return (
+      resolvePlaybackTrackId(nearestStation.playlist, selectedYear) ?? NOISE_LOOP_AUDIO_ID
+    );
+  }, [nearestStation, selectedYear]);
+
+  useEffect(() => {
+    const key = nearestStation ? stationKey(nearestStation) : null;
+    if (!isRadioOn) {
+      setCaptureLeadIn(null);
+      prevStationKeyRef.current = key;
+      return;
+    }
+    if (prevStationKeyRef.current === undefined) {
+      prevStationKeyRef.current = key;
+      setCaptureLeadIn(null);
+      return;
+    }
+    const prev = prevStationKeyRef.current;
+    if (key === null) {
+      setCaptureLeadIn(null);
+    } else if (prev === null) {
+      setCaptureLeadIn(rollCaptureLeadIn(nearestStation?.secret === true));
+    } else if (prev !== key) {
+      setCaptureLeadIn(rollCaptureLeadIn(nearestStation?.secret === true));
+    }
+    prevStationKeyRef.current = key;
+  }, [nearestStation, isRadioOn]);
+
+  const effectivePlaybackTrackId = useMemo(() => {
+    if (!nearestStation) return NOISE_LOOP_AUDIO_ID;
+    if (captureLeadIn === 'hiss') return 'hiss_continuous';
+    if (captureLeadIn === 'tuning') return 'tuning_search_static';
+    return resolvedPlaybackId;
+  }, [nearestStation, captureLeadIn, resolvedPlaybackId]);
+
+  const playbackStreamKey = useMemo(() => {
+    const stationPart = nearestStation ? stationKey(nearestStation) : 'off';
+    const phase = !nearestStation
+      ? 'noise'
+      : captureLeadIn === 'hiss'
+        ? 'sting_hiss'
+        : captureLeadIn === 'tuning'
+          ? 'sting_tune'
+          : 'main';
+    return `${stationPart}|${selectedYear}|${phase}|${resolvedPlaybackId}`;
+  }, [nearestStation, selectedYear, resolvedPlaybackId, captureLeadIn]);
+
+  const endCaptureLeadIn = useCallback(() => {
+    setCaptureLeadIn(null);
+  }, []);
+
   useRadioPlayback({
-    capturedStation: nearestStation,
+    playbackStreamKey,
+    playbackTrackId: effectivePlaybackTrackId,
     volumeRotation,
     powerOn: isRadioOn,
+    onOneShotTrackFinished: endCaptureLeadIn,
   });
 
   const lastSnapKeyRef = useRef<string | null>(null);
@@ -116,10 +194,10 @@ export default function HistoricalRadioApp() {
     setScaleWidth(event.nativeEvent.layout.width);
   };
 
-  const onWaveRotate = (deg: number) => {
+  const onWaveRotate = useCallback((deg: number) => {
     setWaveRotation(deg);
     setFrequencyPosition(tuningPercentFromWaveRotation(deg));
-  };
+  }, []);
 
   const activeBlockStyle =
     selectedBlock === 'СССР'
@@ -195,11 +273,24 @@ export default function HistoricalRadioApp() {
                 />
 
                 <View style={styles.scaleBottomRow}>
-                  {['150', '300', '600', '1000', '1400'].map((t) => (
-                    <Text key={t} style={[styles.scaleNumber, !isRadioOn ? styles.scaleTextDim : null]}>
-                      {t}
-                    </Text>
-                  ))}
+                  {SCALE_MARK_KHZ.map((khz) => {
+                    const pct = tuningPercentFromKhz(khz);
+                    return (
+                      <View
+                        key={khz}
+                        style={[
+                          styles.scaleMarkAnchor,
+                          { left: `${pct}%` },
+                        ]}
+                      >
+                        <Text
+                          style={[styles.scaleNumber, !isRadioOn ? styles.scaleTextDim : null]}
+                        >
+                          {khz}
+                        </Text>
+                      </View>
+                    );
+                  })}
                 </View>
               </View>
 
@@ -269,14 +360,14 @@ export default function HistoricalRadioApp() {
             </View>
 
             <View style={styles.stationsWrap}>
-              {stations.length === 0 ? (
+              {stationsVisible.length === 0 ? (
                 <View style={styles.emptyStationsWrap}>
                   <Text style={styles.emptyStationsText}>
                     На выбранный год в этом блоке нет станций в списке.
                   </Text>
                 </View>
               ) : (
-                stations.map((s) => {
+                stationsVisible.map((s) => {
                   const isTuned =
                     isRadioOn &&
                     nearestStation !== null &&
@@ -316,6 +407,13 @@ export default function HistoricalRadioApp() {
               </View>
 
               <View style={styles.powerCol}>
+                <View
+                  style={[styles.waveReadout, !isRadioOn ? styles.waveReadoutDim : null]}
+                  accessibilityLabel={`Текущая частота ${tuningKhz} килогерц`}
+                >
+                  <Text style={styles.waveReadoutValue}>{tuningKhz}</Text>
+                  <Text style={styles.waveReadoutUnit}>кГц</Text>
+                </View>
                 <PowerToggle on={isRadioOn} onPress={() => setIsRadioOn((v) => !v)} />
               </View>
 

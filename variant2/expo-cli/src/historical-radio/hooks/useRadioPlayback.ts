@@ -1,34 +1,42 @@
 import { useEffect, useRef } from 'react';
 import { Platform } from 'react-native';
 import { Audio, type AVPlaybackStatus } from 'expo-av';
-import type { Station } from '../types';
-import { getAudioModule, NOISE_LOOP_AUDIO_ID } from '../audio/audioMap';
+import { getAudioModule } from '../audio/audioMap';
+
+/** Одноразовые вступления при захвате частоты (не зацикливать). */
+const ONE_SHOT_NO_LOOP_IDS = new Set(['tuning_search_static', 'hiss_continuous']);
+
+/** Длина клипа hiss при стинге — файл длинный, в эфир уводим по таймеру. */
+const HISS_CAPTURE_STING_MAX_MS = 1200;
 
 /** Громкость 0…1 по углу ручки (-140 мин., +140 макс.). */
 function volumeFromKnobDeg(deg: number): number {
   return Math.max(0, Math.min(1, (deg + 140) / 280));
 }
 
-function playbackKey(station: Station | null): string {
-  if (station === null) return '__noise__';
-  return `${station.audioId}:${station.khz}:${station.city}`;
-}
-
 /**
- * Эфир: зацикленный трек станции при «захвате» частоты, иначе — радиошум.
- * При `powerOn === false` звук полностью выгружается. При громкости 0 — `isMuted`.
+ * Эфир по `playbackTrackId` (трек из audioMap или шум `receiver_interference`).
+ * `playbackStreamKey` меняется при смене станции, года или выбранного трека — перезагрузка звука.
+ * Для id из `ONE_SHOT_NO_LOOP_IDS` после окончания вызывается `onOneShotTrackFinished` (например переход к эфиру станции).
+ * `tuning_search_static` звучит половину декларируемой длины файла; `hiss_continuous` — не дольше `HISS_CAPTURE_STING_MAX_MS`.
  */
 export function useRadioPlayback({
-  capturedStation,
+  playbackStreamKey,
+  playbackTrackId,
   volumeRotation,
   powerOn,
+  onOneShotTrackFinished,
 }: {
-  capturedStation: Station | null;
+  playbackStreamKey: string;
+  playbackTrackId: string;
   volumeRotation: number;
   powerOn: boolean;
+  /** Вызывается один раз, когда одноразовый трек доиграл до конца. */
+  onOneShotTrackFinished?: () => void;
 }): void {
   const soundRef = useRef<Audio.Sound | null>(null);
-  const captureKey = playbackKey(capturedStation);
+  const onOneShotFinishedRef = useRef(onOneShotTrackFinished);
+  onOneShotFinishedRef.current = onOneShotTrackFinished;
 
   useEffect(() => {
     const mode =
@@ -49,6 +57,7 @@ export function useRadioPlayback({
 
   useEffect(() => {
     let cancelled = false;
+    let oneShotTimer: ReturnType<typeof setTimeout> | null = null;
 
     async function swapTrack(): Promise<void> {
       if (soundRef.current) {
@@ -64,8 +73,7 @@ export function useRadioPlayback({
         return;
       }
 
-      const id =
-        capturedStation === null ? NOISE_LOOP_AUDIO_ID : capturedStation.audioId;
+      const id = playbackTrackId;
       const mod = getAudioModule(id);
       if (!mod) {
         console.warn(`[useRadioPlayback] missing module for id "${id}"`);
@@ -74,17 +82,48 @@ export function useRadioPlayback({
 
       const initialVol = volumeFromKnobDeg(volumeRotation);
       const muted = initialVol === 0;
+      const oneShot = ONE_SHOT_NO_LOOP_IDS.has(playbackTrackId);
+      let oneShotEndReported = false;
+
+      const scheduleTimedOneShotEnd = async (sound: Audio.Sound) => {
+        const st = await sound.getStatusAsync();
+        if (cancelled || !st.isLoaded || oneShotEndReported) return;
+        const dur = st.durationMillis ?? 0;
+        const waitMs =
+          id === 'tuning_search_static'
+            ? Math.max(80, dur > 0 ? Math.floor(dur / 2) : 400)
+            : Math.max(80, Math.min(HISS_CAPTURE_STING_MAX_MS, dur > 0 ? dur : HISS_CAPTURE_STING_MAX_MS));
+        oneShotTimer = setTimeout(() => {
+          if (cancelled || oneShotEndReported) return;
+          oneShotEndReported = true;
+          oneShotTimer = null;
+          onOneShotFinishedRef.current?.();
+        }, waitMs);
+      };
+
       const { sound } = await Audio.Sound.createAsync(
         mod,
         {
-          isLooping: true,
+          isLooping: !oneShot,
           volume: muted ? 0 : initialVol,
           shouldPlay: true,
           isMuted: muted,
         },
         (status: AVPlaybackStatus) => {
+          if (cancelled) return;
           if (!status.isLoaded && 'error' in status && status.error) {
             console.warn('[useRadioPlayback]', status.error);
+          }
+          if (
+            oneShot &&
+            id !== 'tuning_search_static' &&
+            id !== 'hiss_continuous' &&
+            status.isLoaded &&
+            status.didJustFinish &&
+            !oneShotEndReported
+          ) {
+            oneShotEndReported = true;
+            onOneShotFinishedRef.current?.();
           }
         },
         Platform.OS !== 'web'
@@ -102,6 +141,9 @@ export function useRadioPlayback({
       soundRef.current = sound;
       try {
         await sound.playAsync();
+        if (oneShot && (id === 'tuning_search_static' || id === 'hiss_continuous')) {
+          void scheduleTimedOneShotEnd(sound);
+        }
       } catch (e) {
         console.warn('[useRadioPlayback] playAsync', e);
       }
@@ -111,13 +153,17 @@ export function useRadioPlayback({
 
     return () => {
       cancelled = true;
+      if (oneShotTimer) {
+        clearTimeout(oneShotTimer);
+        oneShotTimer = null;
+      }
       const s = soundRef.current;
       soundRef.current = null;
       if (s) {
         void s.unloadAsync().catch(() => {});
       }
     };
-  }, [captureKey, powerOn]);
+  }, [playbackStreamKey, powerOn, playbackTrackId]);
 
   useEffect(() => {
     if (!powerOn) return;

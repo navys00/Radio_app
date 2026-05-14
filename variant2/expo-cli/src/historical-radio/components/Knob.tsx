@@ -1,12 +1,25 @@
-import React, { useEffect, useMemo, useRef } from 'react';
-import { Animated, Easing, PanResponder, View } from 'react-native';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { Animated, Easing, LayoutChangeEvent, PanResponder, View } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { styles } from '../styles';
 
 const clamp = (v: number, min: number, max: number) => Math.max(min, Math.min(max, v));
 
-function degreesFromCenter(centerX: number, centerY: number, x: number, y: number) {
-  return Math.atan2(y - centerY, x - centerX) * (180 / Math.PI);
+const ROT_MIN = -140;
+const ROT_MAX = 140;
+
+/** Кратчайшая разница углов в градусах (для непрерывного вращения без скачка ±180). */
+function shortAngleDeltaDeg(fromDeg: number, toDeg: number): number {
+  let d = toDeg - fromDeg;
+  while (d > 180) d -= 360;
+  while (d < -180) d += 360;
+  return d;
+}
+
+function pointerAngleDeg(locationX: number, locationY: number, width: number, height: number): number {
+  const cx = width / 2;
+  const cy = height / 2;
+  return (Math.atan2(locationY - cy, locationX - cx) * 180) / Math.PI;
 }
 
 export function Knob({
@@ -19,9 +32,19 @@ export function Knob({
   /** Без жестов и с приглушённым видом (радио выключено). */
   disabled?: boolean;
 }) {
-  const knobRef = useRef<View>(null);
-  const centerRef = useRef<{ x: number; y: number } | null>(null);
+  const [layout, setLayout] = useState({ width: 0, height: 0 });
+  const lastPointerAngleRef = useRef<number | null>(null);
+  const accumulatedRotationRef = useRef(rotation);
+  const rotationPropRef = useRef(rotation);
+  const draggingRef = useRef(false);
   const animatedRotation = useRef(new Animated.Value(rotation)).current;
+
+  useEffect(() => {
+    rotationPropRef.current = rotation;
+    if (!draggingRef.current) {
+      accumulatedRotationRef.current = rotation;
+    }
+  }, [rotation]);
 
   useEffect(() => {
     Animated.timing(animatedRotation, {
@@ -32,28 +55,48 @@ export function Knob({
     }).start();
   }, [animatedRotation, rotation]);
 
+  const onKnobLayout = (e: LayoutChangeEvent) => {
+    const { width, height } = e.nativeEvent.layout;
+    if (width > 0 && height > 0) {
+      setLayout({ width, height });
+    }
+  };
+
   const panResponder = useMemo(
     () =>
       PanResponder.create({
         onStartShouldSetPanResponder: () => !disabled,
+        onStartShouldSetPanResponderCapture: () => !disabled,
         onMoveShouldSetPanResponder: () => !disabled,
-        onPanResponderGrant: () => {
-          if (disabled) return;
-          knobRef.current?.measureInWindow((x, y, w, h) => {
-            centerRef.current = { x: x + w / 2, y: y + h / 2 };
-          });
+        onMoveShouldSetPanResponderCapture: () => !disabled,
+        onPanResponderGrant: (evt) => {
+          if (disabled || layout.width <= 0) return;
+          draggingRef.current = true;
+          const { locationX, locationY } = evt.nativeEvent;
+          const a = pointerAngleDeg(locationX, locationY, layout.width, layout.height);
+          lastPointerAngleRef.current = a;
+          accumulatedRotationRef.current = rotationPropRef.current;
         },
-        onPanResponderMove: (_evt, gesture) => {
-          if (disabled) return;
-          const center = centerRef.current;
-          if (!center) return;
-
-          const angle = degreesFromCenter(center.x, center.y, gesture.moveX, gesture.moveY);
-          const normalized = clamp(angle + 90, -140, 140);
-          onRotate(normalized);
+        onPanResponderMove: (evt) => {
+          if (disabled || layout.width <= 0 || lastPointerAngleRef.current === null) return;
+          const { locationX, locationY } = evt.nativeEvent;
+          const a = pointerAngleDeg(locationX, locationY, layout.width, layout.height);
+          const delta = shortAngleDeltaDeg(lastPointerAngleRef.current, a);
+          lastPointerAngleRef.current = a;
+          const next = clamp(accumulatedRotationRef.current + delta, ROT_MIN, ROT_MAX);
+          accumulatedRotationRef.current = next;
+          onRotate(next);
+        },
+        onPanResponderRelease: () => {
+          draggingRef.current = false;
+          lastPointerAngleRef.current = null;
+        },
+        onPanResponderTerminate: () => {
+          draggingRef.current = false;
+          lastPointerAngleRef.current = null;
         },
       }),
-    [disabled, onRotate]
+    [disabled, layout.width, layout.height, onRotate]
   );
 
   const indicatorRotation = animatedRotation.interpolate({
@@ -63,7 +106,7 @@ export function Knob({
 
   return (
     <View
-      ref={knobRef}
+      onLayout={onKnobLayout}
       {...(disabled ? {} : panResponder.panHandlers)}
       style={[styles.knobOuter, disabled ? styles.knobOuterDisabled : null]}
       pointerEvents={disabled ? 'none' : 'auto'}

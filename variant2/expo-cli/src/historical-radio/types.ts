@@ -7,8 +7,13 @@ export type Station = {
   khz: number;
   /** Годы, в которые станция «в эфире» для текущего сценария */
   years: string[];
-  /** Стабильный id трека в `audioMap` (один трек на станцию для MVP). */
-  audioId: string;
+  /**
+   * Порядок id из `audioCatalog.json`: первый трек, подходящий под выбранный год
+   * (речь — только в год выхода, музыка — с года выпуска по 1945), играет в эфире.
+   */
+  playlist: string[];
+  /** Скрытая станция: не в списке карточек, без отметки на шкале; эфир из `secret/`. */
+  secret?: boolean;
 };
 
 export type StationsByBlock = Record<MilitaryBlock, Station[]>;

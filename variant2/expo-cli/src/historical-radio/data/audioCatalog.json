@@ -1,0 +1,129 @@
+{
+  "tracks": [
+    {
+      "id": "molotov_war_declaration_1941",
+      "kind": "speech",
+      "releaseYear": 1941
+    },
+    {
+      "id": "stalingrad_levitin_report_1943",
+      "kind": "speech",
+      "releaseYear": 1943
+    },
+    {
+      "id": "levitan_9_maya_1945",
+      "kind": "speech",
+      "releaseYear": 1945
+    },
+    {
+      "id": "roosevelt_day_of_infamy_speech_1941",
+      "kind": "speech",
+      "releaseYear": 1941
+    },
+    {
+      "id": "hitler_speech_war_on_ussr_1941",
+      "kind": "speech",
+      "releaseYear": 1941
+    },
+    {
+      "id": "hitler_total_war_speech_1943",
+      "kind": "speech",
+      "releaseYear": 1943
+    },
+    {
+      "id": "svyashchennaya_voina_1941",
+      "kind": "music",
+      "releaseYear": 1941
+    },
+    {
+      "id": "pesni_voennykh_let_v_lesu_prifrontovom_1942",
+      "kind": "music",
+      "releaseYear": 1942
+    },
+    {
+      "id": "pesni_voennykh_let_v_zemlyanke_1942",
+      "kind": "music",
+      "releaseYear": 1942
+    },
+    {
+      "id": "marsh_artilleristov_1943",
+      "kind": "music",
+      "releaseYear": 1943
+    },
+    {
+      "id": "chant_des_partisans_anna_marly_1942",
+      "kind": "music",
+      "releaseYear": 1942
+    },
+    {
+      "id": "mark_bernes_temnaya_noch_1943",
+      "kind": "music",
+      "releaseYear": 1943
+    },
+    {
+      "id": "any_bonds_today_1942",
+      "kind": "music",
+      "releaseYear": 1942
+    },
+    {
+      "id": "this_is_the_army_mr_jones_1943",
+      "kind": "music",
+      "releaseYear": 1943
+    },
+    {
+      "id": "la_romance_de_paris_1941",
+      "kind": "music",
+      "releaseYear": 1941
+    },
+    {
+      "id": "la_romance_de_paris_1941_axis",
+      "kind": "music",
+      "releaseYear": 1941
+    },
+    {
+      "id": "chant_des_partisans_mestral_1943",
+      "kind": "music",
+      "releaseYear": 1943
+    },
+    {
+      "id": "faccetta_nera_1938",
+      "kind": "music",
+      "releaseYear": 1938
+    },
+    {
+      "id": "was_wollen_wir_trinken_1941",
+      "kind": "music",
+      "releaseYear": 1941
+    },
+    {
+      "id": "wagner_valkyrie_ride_1941",
+      "kind": "music",
+      "releaseYear": 1941
+    },
+    {
+      "id": "beethoven_moonlight_sonata_1941",
+      "kind": "music",
+      "releaseYear": 1941
+    },
+    {
+      "id": "lili_marleen_1941",
+      "kind": "music",
+      "releaseYear": 1941
+    },
+    {
+      "id": "ussr_secret_signal",
+      "kind": "music",
+      "releaseYear": 1941
+    },
+    {
+      "id": "axis_secret_signal",
+      "kind": "music",
+      "releaseYear": 1941
+    },
+    {
+      "id": "allies_secret_signal",
+      "kind": "music",
+      "releaseYear": 1941
+    }
+  ]
+}

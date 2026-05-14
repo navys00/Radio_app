@@ -5,28 +5,66 @@
       "freq": "612 кГц",
       "khz": 612,
       "years": ["1941", "1942", "1943", "1944", "1945"],
-      "audioId": "molotov_war_declaration_1941_06_22"
+      "playlist": [
+        "levitan_9_maya_1945",
+        "molotov_war_declaration_1941",
+        "stalingrad_levitin_report_1943",
+        "marsh_artilleristov_1943",
+        "svyashchennaya_voina_1941",
+        "pesni_voennykh_let_v_lesu_prifrontovom_1942",
+        "pesni_voennykh_let_v_zemlyanke_1942",
+        "chant_des_partisans_anna_marly_1942",
+        "mark_bernes_temnaya_noch_1943"
+      ]
     },
     {
       "city": "Ленинград",
       "freq": "720 кГц",
       "khz": 720,
       "years": ["1941", "1942", "1943", "1944"],
-      "audioId": "mark_bernes_temnaya_noch"
+      "playlist": [
+        "mark_bernes_temnaya_noch_1943",
+        "marsh_artilleristov_1943",
+        "chant_des_partisans_anna_marly_1942",
+        "pesni_voennykh_let_v_lesu_prifrontovom_1942",
+        "pesni_voennykh_let_v_zemlyanke_1942",
+        "svyashchennaya_voina_1941"
+      ]
     },
     {
       "city": "Сталинград",
       "freq": "840 кГц",
       "khz": 840,
       "years": ["1942", "1943", "1944", "1945"],
-      "audioId": "stalingrad_levitin_report"
+      "playlist": [
+        "stalingrad_levitin_report_1943",
+        "marsh_artilleristov_1943",
+        "mark_bernes_temnaya_noch_1943",
+        "chant_des_partisans_anna_marly_1942",
+        "pesni_voennykh_let_v_lesu_prifrontovom_1942",
+        "pesni_voennykh_let_v_zemlyanke_1942",
+        "svyashchennaya_voina_1941"
+      ]
     },
     {
       "city": "Минск",
       "freq": "900 кГц",
       "khz": 900,
       "years": ["1941", "1942", "1943", "1944"],
-      "audioId": "chant_des_partisans_anna_marly_1942"
+      "playlist": [
+        "chant_des_partisans_anna_marly_1942",
+        "pesni_voennykh_let_v_lesu_prifrontovom_1942",
+        "pesni_voennykh_let_v_zemlyanke_1942",
+        "svyashchennaya_voina_1941"
+      ]
+    },
+    {
+      "city": "Сигнал",
+      "freq": "",
+      "khz": 582,
+      "years": ["1941", "1942", "1943", "1944", "1945"],
+      "secret": true,
+      "playlist": ["ussr_secret_signal"]
     }
   ],
   "ОСЬ": [
@@ -35,28 +73,56 @@
       "freq": "810 кГц",
       "khz": 810,
       "years": ["1941", "1942", "1943", "1944", "1945"],
-      "audioId": "hitler_speech_war_on_ussr"
+      "playlist": [
+        "hitler_speech_war_on_ussr_1941",
+        "hitler_total_war_speech_1943",
+        "lili_marleen_1941",
+        "wagner_valkyrie_ride_1941",
+        "beethoven_moonlight_sonata_1941",
+        "was_wollen_wir_trinken_1941",
+        "faccetta_nera_1938"
+      ]
     },
     {
       "city": "Рим",
       "freq": "880 кГц",
       "khz": 880,
       "years": ["1941", "1942", "1943"],
-      "audioId": "faccetta_nera"
+      "playlist": ["lili_marleen_1941", "wagner_valkyrie_ride_1941", "faccetta_nera_1938"]
     },
     {
       "city": "Вена",
       "freq": "740 кГц",
       "khz": 740,
       "years": ["1941", "1942", "1943", "1944", "1945"],
-      "audioId": "was_wollen_wir_trinken"
+      "playlist": [
+        "was_wollen_wir_trinken_1941",
+        "lili_marleen_1941",
+        "beethoven_moonlight_sonata_1941",
+        "wagner_valkyrie_ride_1941",
+        "la_romance_de_paris_1941_axis"
+      ]
     },
     {
       "city": "Будапешт",
       "freq": "920 кГц",
       "khz": 920,
       "years": ["1944", "1945"],
-      "audioId": "hitler_total_war_speech"
+      "playlist": [
+        "hitler_total_war_speech_1943",
+        "lili_marleen_1941",
+        "beethoven_moonlight_sonata_1941",
+        "la_romance_de_paris_1941_axis",
+        "was_wollen_wir_trinken_1941"
+      ]
+    },
+    {
+      "city": "Сигнал",
+      "freq": "",
+      "khz": 786,
+      "years": ["1941", "1942", "1943", "1944", "1945"],
+      "secret": true,
+      "playlist": ["axis_secret_signal"]
     }
   ],
   "Союзники": [
@@ -65,28 +131,46 @@
       "freq": "940 кГц",
       "khz": 940,
       "years": ["1941", "1942", "1943", "1944", "1945"],
-      "audioId": "any_bonds_today"
+      "playlist": [
+        "roosevelt_day_of_infamy_speech_1941",
+        "any_bonds_today_1942",
+        "this_is_the_army_mr_jones_1943",
+        "la_romance_de_paris_1941"
+      ]
     },
     {
       "city": "Вашингтон",
       "freq": "1050 кГц",
       "khz": 1050,
       "years": ["1941", "1942", "1943", "1944", "1945"],
-      "audioId": "this_is_the_army_mr_jones"
+      "playlist": [
+        "roosevelt_day_of_infamy_speech_1941",
+        "this_is_the_army_mr_jones_1943",
+        "any_bonds_today_1942",
+        "la_romance_de_paris_1941"
+      ]
     },
     {
       "city": "Нью-Йорк",
       "freq": "1010 кГц",
       "khz": 1010,
       "years": ["1942", "1943", "1944", "1945"],
-      "audioId": "la_romance_de_paris_1941"
+      "playlist": ["this_is_the_army_mr_jones_1943", "any_bonds_today_1942", "la_romance_de_paris_1941"]
     },
     {
       "city": "Париж",
       "freq": "845 кГц",
       "khz": 845,
       "years": ["1944", "1945"],
-      "audioId": "chant_des_partisans_mestral"
+      "playlist": ["chant_des_partisans_mestral_1943", "la_romance_de_paris_1941"]
+    },
+    {
+      "city": "Сигнал",
+      "freq": "",
+      "khz": 1180,
+      "years": ["1941", "1942", "1943", "1944", "1945"],
+      "secret": true,
+      "playlist": ["allies_secret_signal"]
     }
   ]
 }
