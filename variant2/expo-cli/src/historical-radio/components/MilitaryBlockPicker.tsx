@@ -2,6 +2,7 @@ import React from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { MILITARY_BLOCKS } from '../constants';
+import { useLayoutMetrics } from '../context/ResponsiveLayoutContext';
 import { styles } from '../styles';
 import type { MilitaryBlock } from '../types';
 
@@ -17,6 +18,8 @@ type MilitaryBlockPickerProps = {
 };
 
 export function MilitaryBlockPicker({ selectedBlock, onSelectBlock }: MilitaryBlockPickerProps) {
+  const { blockBtnPaddingV } = useLayoutMetrics();
+
   return (
     <View style={styles.panel}>
       <LinearGradient colors={['#32271f', '#1e1712']} style={StyleSheet.absoluteFill} />
@@ -31,6 +34,7 @@ export function MilitaryBlockPicker({ selectedBlock, onSelectBlock }: MilitaryBl
               onPress={() => onSelectBlock(block)}
               style={({ pressed }) => [
                 styles.blockBtn,
+                { paddingVertical: blockBtnPaddingV },
                 isActive ? activeBlockStyle(block) : null,
                 isActive ? styles.controlDisabled : null,
                 pressed ? styles.controlPressed : null,

@@ -1,13 +1,14 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import { useLayoutMetrics } from '../context/ResponsiveLayoutContext';
 import { styles } from '../styles';
-import type { MilitaryBlock, Station } from '../types';
+import type { Station } from '../types';
+import { stationDisplayCity } from '../stationDisplay';
 import { stationKey } from '../tuning';
 
 type StationListProps = {
   stations: Station[];
-  selectedBlock: MilitaryBlock;
   selectedYear: string;
   isRadioOn: boolean;
   nearestStation: Station | null;
@@ -15,11 +16,13 @@ type StationListProps = {
 
 export function StationList({
   stations,
-  selectedBlock,
   selectedYear,
   isRadioOn,
   nearestStation,
 }: StationListProps) {
+  const { stationFontSize } = useLayoutMetrics();
+  const freqFontSize = Math.max(10, stationFontSize - 1);
+
   if (stations.length === 0) {
     return (
       <View style={styles.emptyStationsWrap}>
@@ -33,11 +36,12 @@ export function StationList({
   return (
     <View style={styles.stationsWrap}>
       {stations.map((s) => {
+        const label = stationDisplayCity(s, selectedYear);
         const isTuned =
           isRadioOn && nearestStation !== null && stationKey(s) === stationKey(nearestStation);
         return (
           <View
-            key={`${selectedBlock}-${selectedYear}-${s.city}-${s.khz}`}
+            key={`${selectedYear}-${s.khz}`}
             style={[styles.stationCard, isTuned ? styles.stationCardActive : null]}
           >
             <LinearGradient
@@ -49,12 +53,26 @@ export function StationList({
               style={StyleSheet.absoluteFill}
             />
             <View style={styles.stationLeft}>
-              <Text style={[styles.stationCity, isTuned ? styles.stationCityActive : null]}>
-                {s.city}
+              <Text
+                style={[
+                  styles.stationCity,
+                  { fontSize: stationFontSize },
+                  isTuned ? styles.stationCityActive : null,
+                ]}
+                numberOfLines={1}
+                adjustsFontSizeToFit
+                minimumFontScale={0.75}
+              >
+                {label}
               </Text>
-              <Text style={styles.stationBlock}>{selectedBlock}</Text>
             </View>
-            <Text style={[styles.stationFreq, isTuned ? styles.stationFreqActive : null]}>
+            <Text
+              style={[
+                styles.stationFreq,
+                { fontSize: freqFontSize },
+                isTuned ? styles.stationFreqActive : null,
+              ]}
+            >
               {s.freq}
             </Text>
           </View>

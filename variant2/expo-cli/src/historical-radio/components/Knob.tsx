@@ -1,11 +1,11 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { Animated, Easing, LayoutChangeEvent, PanResponder, View } from 'react-native';
+import { Animated, Easing, LayoutChangeEvent, PanResponder, View, type ViewStyle } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import { useLayoutMetrics } from '../context/ResponsiveLayoutContext';
 import { KNOB_ROT_MAX, KNOB_ROT_MIN } from '../constants';
 import { styles } from '../styles';
 import { clamp } from '../tuning';
 
-/** Кратчайшая разница углов в градусах (для непрерывного вращения без скачка ±180). */
 function shortAngleDeltaDeg(fromDeg: number, toDeg: number): number {
   let d = toDeg - fromDeg;
   while (d > 180) d -= 360;
@@ -24,19 +24,37 @@ export function Knob({
   onRotate,
   disabled = false,
   accessibilityLabel,
+  size: sizeProp,
 }: {
   rotation: number;
   onRotate: (deg: number) => void;
-  /** Без жестов и с приглушённым видом (радио выключено). */
   disabled?: boolean;
   accessibilityLabel?: string;
+  size?: number;
 }) {
+  const { knobSize: defaultKnobSize } = useLayoutMetrics();
+  const size = sizeProp ?? defaultKnobSize;
+
   const [layout, setLayout] = useState({ width: 0, height: 0 });
   const lastPointerAngleRef = useRef<number | null>(null);
   const accumulatedRotationRef = useRef(rotation);
   const rotationPropRef = useRef(rotation);
   const draggingRef = useRef(false);
   const animatedRotation = useRef(new Animated.Value(rotation)).current;
+
+  const knobMetrics = useMemo(() => {
+    const rim = Math.round(size * 0.09);
+    const inner = Math.round(size * 0.16);
+    const core = Math.round(size * 0.2);
+    const indicatorH = Math.round(size * 0.35);
+    return { rim, inner, core, indicatorH };
+  }, [size]);
+
+  const outerStyle: ViewStyle = {
+    width: size,
+    height: size,
+    borderRadius: size / 2,
+  };
 
   useEffect(() => {
     rotationPropRef.current = rotation;
@@ -107,7 +125,7 @@ export function Knob({
     <View
       onLayout={onKnobLayout}
       {...(disabled ? {} : panResponder.panHandlers)}
-      style={[styles.knobOuter, disabled ? styles.knobOuterDisabled : null]}
+      style={[styles.knobOuter, outerStyle, disabled ? styles.knobOuterDisabled : null]}
       pointerEvents={disabled ? 'none' : 'auto'}
       accessibilityRole="adjustable"
       accessibilityLabel={accessibilityLabel}
@@ -119,16 +137,53 @@ export function Knob({
         style={styles.knobGradient}
       />
 
-      <View style={styles.knobRim} />
-      <View style={styles.knobInnerRing} />
-      <LinearGradient colors={['#9d7a56', '#2c221a']} style={styles.knobCore} />
+      <View
+        style={[
+          styles.knobRim,
+          { left: knobMetrics.rim, right: knobMetrics.rim, top: knobMetrics.rim, bottom: knobMetrics.rim },
+        ]}
+      />
+      <View
+        style={[
+          styles.knobInnerRing,
+          {
+            left: knobMetrics.inner,
+            right: knobMetrics.inner,
+            top: knobMetrics.inner,
+            bottom: knobMetrics.inner,
+          },
+        ]}
+      />
+      <LinearGradient
+        colors={['#9d7a56', '#2c221a']}
+        style={[
+          styles.knobCore,
+          {
+            left: knobMetrics.core,
+            right: knobMetrics.core,
+            top: knobMetrics.core,
+            bottom: knobMetrics.core,
+          },
+        ]}
+      />
 
       <Animated.View
-        style={[styles.knobIndicatorWrap, { transform: [{ rotate: indicatorRotation }] }]}
+        style={[
+          styles.knobIndicatorWrap,
+          {
+            top: knobMetrics.rim,
+            bottom: knobMetrics.rim,
+            left: knobMetrics.rim,
+            right: knobMetrics.rim,
+            transform: [{ rotate: indicatorRotation }],
+          },
+        ]}
       >
-        <LinearGradient colors={['#ffe2aa', '#ff9c3a']} style={styles.knobIndicator} />
+        <LinearGradient
+          colors={['#ffe2aa', '#ff9c3a']}
+          style={[styles.knobIndicator, { height: knobMetrics.indicatorH }]}
+        />
       </Animated.View>
     </View>
   );
 }
-

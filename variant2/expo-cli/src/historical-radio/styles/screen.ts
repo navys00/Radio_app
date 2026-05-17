@@ -5,11 +5,10 @@ export const screenStyles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#15120f',
   },
-  scroll: {
-    minHeight: '100%',
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 20,
-    paddingHorizontal: 16,
+  screenContent: {
+    flex: 1,
+    width: '100%',
+    paddingHorizontal: 10,
+    paddingVertical: 6,
   },
 });

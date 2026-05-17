@@ -18,7 +18,10 @@ export function useStationCatalog(
     [stationsAll, selectedYear]
   );
 
-  const stationsVisible = useMemo(() => stations.filter((s) => !s.secret), [stations]);
+  const stationsVisible = useMemo(
+    () => stations.filter((s) => !s.secret).slice(0, 3),
+    [stations]
+  );
 
   const tuningKhz = useMemo(() => khzFromTuningPercent(frequencyPosition), [frequencyPosition]);
 

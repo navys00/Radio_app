@@ -21,25 +21,17 @@
       "city": "Ленинград",
       "freq": "720 кГц",
       "khz": 720,
-      "years": ["1941", "1942", "1943", "1944"],
+      "years": ["1941", "1942", "1943", "1944", "1945"],
+      "cityByYear": {
+        "1941": "Ленинград",
+        "1942": "Ленинград (блокада)",
+        "1943": "Ленинград (блокада)",
+        "1944": "Ленинград",
+        "1945": "Ленинград"
+      },
       "playlist": [
         "mark_bernes_temnaya_noch_1943",
         "marsh_artilleristov_1943",
-        "chant_des_partisans_anna_marly_1942",
-        "pesni_voennykh_let_v_lesu_prifrontovom_1942",
-        "pesni_voennykh_let_v_zemlyanke_1942",
-        "svyashchennaya_voina_1941"
-      ]
-    },
-    {
-      "city": "Сталинград",
-      "freq": "840 кГц",
-      "khz": 840,
-      "years": ["1942", "1943", "1944", "1945"],
-      "playlist": [
-        "stalingrad_levitin_report_1943",
-        "marsh_artilleristov_1943",
-        "mark_bernes_temnaya_noch_1943",
         "chant_des_partisans_anna_marly_1942",
         "pesni_voennykh_let_v_lesu_prifrontovom_1942",
         "pesni_voennykh_let_v_zemlyanke_1942",
@@ -50,8 +42,28 @@
       "city": "Минск",
       "freq": "900 кГц",
       "khz": 900,
-      "years": ["1941", "1942", "1943", "1944"],
+      "years": ["1941", "1944"],
       "playlist": [
+        "chant_des_partisans_anna_marly_1942",
+        "pesni_voennykh_let_v_lesu_prifrontovom_1942",
+        "pesni_voennykh_let_v_zemlyanke_1942",
+        "svyashchennaya_voina_1941"
+      ]
+    },
+    {
+      "city": "Сталинград",
+      "freq": "840 кГц",
+      "khz": 840,
+      "years": ["1942", "1943", "1945"],
+      "cityByYear": {
+        "1942": "Сталинград",
+        "1943": "Сталинград",
+        "1945": "Сталинград (Победа)"
+      },
+      "playlist": [
+        "stalingrad_levitin_report_1943",
+        "marsh_artilleristov_1943",
+        "mark_bernes_temnaya_noch_1943",
         "chant_des_partisans_anna_marly_1942",
         "pesni_voennykh_let_v_lesu_prifrontovom_1942",
         "pesni_voennykh_let_v_zemlyanke_1942",
@@ -73,6 +85,10 @@
       "freq": "810 кГц",
       "khz": 810,
       "years": ["1941", "1942", "1943", "1944", "1945"],
+      "cityByYear": {
+        "1943": "Берлин (Тотальная война)",
+        "1945": "Берлин (Рейхстаг)"
+      },
       "playlist": [
         "hitler_speech_war_on_ussr_1941",
         "hitler_total_war_speech_1943",
@@ -135,7 +151,8 @@
         "roosevelt_day_of_infamy_speech_1941",
         "any_bonds_today_1942",
         "this_is_the_army_mr_jones_1943",
-        "la_romance_de_paris_1941"
+        "la_romance_de_paris_1941",
+        "chant_des_partisans_mestral_1943"
       ]
     },
     {
@@ -143,6 +160,9 @@
       "freq": "1050 кГц",
       "khz": 1050,
       "years": ["1941", "1942", "1943", "1944", "1945"],
+      "cityByYear": {
+        "1941": "Вашингтон (День «злой славы»)"
+      },
       "playlist": [
         "roosevelt_day_of_infamy_speech_1941",
         "this_is_the_army_mr_jones_1943",
@@ -154,14 +174,29 @@
       "city": "Нью-Йорк",
       "freq": "1010 кГц",
       "khz": 1010,
-      "years": ["1942", "1943", "1944", "1945"],
+      "years": ["1942", "1943"],
       "playlist": ["this_is_the_army_mr_jones_1943", "any_bonds_today_1942", "la_romance_de_paris_1941"]
+    },
+    {
+      "city": "Касабланка",
+      "freq": "980 кГц",
+      "khz": 980,
+      "years": ["1941"],
+      "playlist": [
+        "roosevelt_day_of_infamy_speech_1941",
+        "any_bonds_today_1942",
+        "la_romance_de_paris_1941"
+      ]
     },
     {
       "city": "Париж",
       "freq": "845 кГц",
       "khz": 845,
       "years": ["1944", "1945"],
+      "cityByYear": {
+        "1944": "Париж (освобождение)",
+        "1945": "Париж"
+      },
       "playlist": ["chant_des_partisans_mestral_1943", "la_romance_de_paris_1941"]
     },
     {

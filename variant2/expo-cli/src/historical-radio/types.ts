@@ -2,6 +2,8 @@ export type MilitaryBlock = 'СССР' | 'ОСЬ' | 'Союзники';
 
 export type Station = {
   city: string;
+  /** Подпись на карточке для выбранного года (исторический контекст). */
+  cityByYear?: Partial<Record<string, string>>;
   freq: string;
   /** Числовая частота для привязки ручки «Волна» к шкале 150–1400 кГц */
   khz: number;
