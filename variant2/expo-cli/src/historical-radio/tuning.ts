@@ -5,6 +5,11 @@ export const SCALE_MAX_KHZ = 1400;
 
 export const clamp = (v: number, min: number, max: number) => Math.max(min, Math.min(max, v));
 
+/** Громкость 0…1 по углу ручки (KNOB_ROT_MIN … KNOB_ROT_MAX). */
+export function volumeFromKnobDeg(deg: number, rotMin: number, rotMax: number): number {
+  return Math.max(0, Math.min(1, (deg - rotMin) / (rotMax - rotMin)));
+}
+
 /** Шкала на UI: 0–100% соответствует 150–1400 кГц (линейно). */
 export function khzFromTuningPercent(percent: number): number {
   const t = clamp(percent, 0, 100) / 100;

@@ -1,12 +1,9 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Animated, Easing, LayoutChangeEvent, PanResponder, View } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import { KNOB_ROT_MAX, KNOB_ROT_MIN } from '../constants';
 import { styles } from '../styles';
-
-const clamp = (v: number, min: number, max: number) => Math.max(min, Math.min(max, v));
-
-const ROT_MIN = -140;
-const ROT_MAX = 140;
+import { clamp } from '../tuning';
 
 /** Кратчайшая разница углов в градусах (для непрерывного вращения без скачка ±180). */
 function shortAngleDeltaDeg(fromDeg: number, toDeg: number): number {
@@ -26,11 +23,13 @@ export function Knob({
   rotation,
   onRotate,
   disabled = false,
+  accessibilityLabel,
 }: {
   rotation: number;
   onRotate: (deg: number) => void;
   /** Без жестов и с приглушённым видом (радио выключено). */
   disabled?: boolean;
+  accessibilityLabel?: string;
 }) {
   const [layout, setLayout] = useState({ width: 0, height: 0 });
   const lastPointerAngleRef = useRef<number | null>(null);
@@ -83,7 +82,7 @@ export function Knob({
           const a = pointerAngleDeg(locationX, locationY, layout.width, layout.height);
           const delta = shortAngleDeltaDeg(lastPointerAngleRef.current, a);
           lastPointerAngleRef.current = a;
-          const next = clamp(accumulatedRotationRef.current + delta, ROT_MIN, ROT_MAX);
+          const next = clamp(accumulatedRotationRef.current + delta, KNOB_ROT_MIN, KNOB_ROT_MAX);
           accumulatedRotationRef.current = next;
           onRotate(next);
         },
@@ -110,6 +109,9 @@ export function Knob({
       {...(disabled ? {} : panResponder.panHandlers)}
       style={[styles.knobOuter, disabled ? styles.knobOuterDisabled : null]}
       pointerEvents={disabled ? 'none' : 'auto'}
+      accessibilityRole="adjustable"
+      accessibilityLabel={accessibilityLabel}
+      accessibilityState={{ disabled }}
     >
       <LinearGradient
         colors={['#806246', '#3d2f23', '#16110e']}

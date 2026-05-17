@@ -13,12 +13,14 @@
       "backgroundColor": "#ffffff"
     },
     "ios": {
+      "bundleIdentifier": "com.festival.historicalradio",
       "supportsTablet": true,
       "infoPlist": {
         "UIBackgroundModes": ["audio"]
       }
     },
     "android": {
+      "package": "com.festival.historicalradio",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"

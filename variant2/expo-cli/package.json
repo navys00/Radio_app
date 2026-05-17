@@ -7,7 +7,12 @@
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
-    "validate:audio": "node ./scripts/validate-audio.cjs"
+    "typecheck": "tsc --noEmit",
+    "validate:audio": "node ./scripts/validate-audio.cjs",
+    "validate": "npm run validate:audio && npm run typecheck",
+    "prebuild:android": "expo prebuild --platform android --no-install",
+    "build:android:apk": "npm run validate && npm run prebuild:android && cd android && gradlew.bat assembleRelease",
+    "build:android:apk:cloud": "eas build --platform android --profile preview"
   },
   "dependencies": {
     "@expo-google-fonts/oswald": "^0.4.2",
@@ -17,6 +22,7 @@
     "expo-font": "~14.0.11",
     "expo-haptics": "~15.0.8",
     "expo-linear-gradient": "~15.0.8",
+    "expo-splash-screen": "~31.0.13",
     "expo-status-bar": "~3.0.9",
     "react": "19.1.0",
     "react-dom": "19.1.0",

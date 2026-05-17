@@ -1,0 +1,20 @@
+# Dependencies
+node_modules/
+
+# Expo / React Native
+.expo/
+dist/
+*.apk
+
+# Audio assets (variant2)
+variant2/expo-cli/assets/audio/**/*.mp3
+variant2/expo-cli/assets/audio/**/*.wav
+variant2/expo-cli/assets/audio/**/*.m4a
+variant2/expo-cli/assets/audio/**/*.aac
+variant2/expo-cli/assets/audio/**/*.ogg
+variant2/expo-cli/assets/audio/**/*.flac
+
+# Android build outputs
+variant2/expo-cli/android/app/build/
+variant2/expo-cli/android/build/
+variant2/expo-cli/android/.gradle/

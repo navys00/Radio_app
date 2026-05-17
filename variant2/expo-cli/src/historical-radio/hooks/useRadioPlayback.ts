@@ -2,17 +2,14 @@ import { useEffect, useRef } from 'react';
 import { Platform } from 'react-native';
 import { Audio, type AVPlaybackStatus } from 'expo-av';
 import { getAudioModule } from '../audio/audioMap';
+import { KNOB_ROT_MAX, KNOB_ROT_MIN } from '../constants';
+import { volumeFromKnobDeg } from '../tuning';
 
 /** Одноразовые вступления при захвате частоты (не зацикливать). */
 const ONE_SHOT_NO_LOOP_IDS = new Set(['tuning_search_static', 'hiss_continuous']);
 
 /** Длина клипа hiss при стинге — файл длинный, в эфир уводим по таймеру. */
 const HISS_CAPTURE_STING_MAX_MS = 1200;
-
-/** Громкость 0…1 по углу ручки (-140 мин., +140 макс.). */
-function volumeFromKnobDeg(deg: number): number {
-  return Math.max(0, Math.min(1, (deg + 140) / 280));
-}
 
 /**
  * Эфир по `playbackTrackId` (трек из audioMap или шум `receiver_interference`).
@@ -80,7 +77,7 @@ export function useRadioPlayback({
         return;
       }
 
-      const initialVol = volumeFromKnobDeg(volumeRotation);
+      const initialVol = volumeFromKnobDeg(volumeRotation, KNOB_ROT_MIN, KNOB_ROT_MAX);
       const muted = initialVol === 0;
       const oneShot = ONE_SHOT_NO_LOOP_IDS.has(playbackTrackId);
       let oneShotEndReported = false;
@@ -169,7 +166,7 @@ export function useRadioPlayback({
     if (!powerOn) return;
     const s = soundRef.current;
     if (!s) return;
-    const v = volumeFromKnobDeg(volumeRotation);
+    const v = volumeFromKnobDeg(volumeRotation, KNOB_ROT_MIN, KNOB_ROT_MAX);
     const muted = v === 0;
     void (async () => {
       try {

@@ -1,0 +1,86 @@
+import { StyleSheet } from 'react-native';
+import { CARD_W } from '../theme/layout';
+
+export const radioBodyStyles = StyleSheet.create({
+  radioBody: {
+    width: CARD_W,
+    borderRadius: 32,
+    overflow: 'hidden',
+    borderWidth: 2,
+    borderTopColor: '#a37d52',
+    borderLeftColor: '#8d6b47',
+    borderRightColor: '#3f2d20',
+    borderBottomColor: '#241811',
+    backgroundColor: '#241b15',
+    shadowColor: '#000',
+    shadowOpacity: 0.86,
+    shadowRadius: 28,
+    shadowOffset: { width: 0, height: 18 },
+    elevation: 14,
+  },
+  innerPad: {
+    padding: 18,
+  },
+  bodyFill: {
+    ...StyleSheet.absoluteFillObject,
+  },
+  bodyRadialLike: {
+    position: 'absolute',
+    left: -CARD_W * 0.2,
+    top: -CARD_W * 0.25,
+    width: CARD_W * 1.2,
+    height: CARD_W * 0.9,
+    borderRadius: 999,
+    opacity: 0.9,
+  },
+  bodyNoise: {
+    ...StyleSheet.absoluteFillObject,
+    opacity: 0.12,
+    backgroundColor: 'transparent',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.03)',
+  },
+  bodyInsetShadow: {
+    ...StyleSheet.absoluteFillObject,
+    borderRadius: 30,
+    borderWidth: 10,
+    borderTopColor: 'rgba(255,224,176,0.08)',
+    borderLeftColor: 'rgba(255,224,176,0.035)',
+    borderRightColor: 'rgba(0,0,0,0.24)',
+    borderBottomColor: 'rgba(0,0,0,0.36)',
+  },
+  bodyTopBevel: {
+    position: 'absolute',
+    top: 0,
+    left: 16,
+    right: 16,
+    height: 2,
+    backgroundColor: 'rgba(255,226,174,0.22)',
+  },
+  bodyBottomVignette: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: 0,
+    height: 135,
+    backgroundColor: 'rgba(0,0,0,0.18)',
+  },
+  titleWrap: {
+    alignItems: 'center',
+    marginBottom: 18,
+  },
+  title: {
+    color: '#f4e6cf',
+    fontFamily: 'PlayfairDisplay_700Bold_Italic',
+    fontSize: 40,
+    letterSpacing: 0.5,
+    textAlign: 'center',
+    textShadowColor: 'rgba(0,0,0,0.75)',
+    textShadowOffset: { width: 0, height: 3 },
+    textShadowRadius: 8,
+  },
+  titleLightsOff: {
+    opacity: 0.32,
+    textShadowRadius: 2,
+  },
+});

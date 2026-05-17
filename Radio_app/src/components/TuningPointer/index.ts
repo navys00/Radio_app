@@ -1,1 +1,0 @@
-export { TuningPointer } from './TuningPointer';
