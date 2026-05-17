@@ -1,6 +1,6 @@
 # Build artifacts
 dist/
-*.apk
+
 android/app/build/
 
 # Audio (local bundle, not in VCS)
