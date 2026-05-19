@@ -28,7 +28,7 @@ export function useResponsiveLayout(): ResponsiveLayout {
       screenH: h,
       cardW,
       titleFontSize: clamp(h * 0.038, 24, 38),
-      knobSize: clamp(Math.min(cardW * 0.26, h * 0.115), 76, 118),
+      knobSize: clamp(Math.min(cardW * 0.34, h * 0.145), 100, 138),
       yearBtnHeight: clamp(h * 0.048, 34, 48),
       blockBtnPaddingV: clamp(h * 0.012, 7, 12),
       panelGap: clamp(h * 0.006, 4, 8),

@@ -18,6 +18,9 @@ export const layoutZoneStyles = StyleSheet.create({
     flex: 1,
     minHeight: 64,
   },
+  zonePlaylist: {
+    flexShrink: 0,
+  },
   zoneControls: {
     flex: 1,
     minHeight: 72,

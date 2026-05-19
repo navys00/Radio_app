@@ -20,3 +20,32 @@ export type Station = {
 
 export type StationsByBlock = Record<MilitaryBlock, Station[]>;
 
+export type AppMode = 'festival' | 'manual';
+
+export type AudioTrackKind = 'speech' | 'music';
+
+/** Пользовательский трек (локальный файл + метаданные для эфира). */
+export type UserTrack = {
+  id: string;
+  title: string;
+  block: MilitaryBlock;
+  /** Годы сценария, в которые трек доступен в эфире */
+  years: string[];
+  kind: AudioTrackKind;
+  releaseYear: number;
+  fileUri: string;
+  createdAt: number;
+};
+
+export const USER_TRACK_ID_PREFIX = 'user:';
+
+export function toUserPlaybackId(trackId: string): string {
+  return `${USER_TRACK_ID_PREFIX}${trackId}`;
+}
+
+export function parseUserPlaybackId(playbackId: string): string | null {
+  return playbackId.startsWith(USER_TRACK_ID_PREFIX)
+    ? playbackId.slice(USER_TRACK_ID_PREFIX.length)
+    : null;
+}
+

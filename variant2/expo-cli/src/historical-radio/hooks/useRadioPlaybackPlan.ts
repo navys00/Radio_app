@@ -1,7 +1,9 @@
 import { useEffect, useMemo } from 'react';
 import { validateStationAudioReferences, NOISE_LOOP_AUDIO_ID } from '../audio/audioMap';
+import { resolvePlaybackSource } from '../audio/playbackSource';
 import { resolvePlaybackTrackId } from '../audio/resolvePlaybackTrack';
 import type { CaptureLeadIn } from '../captureLeadIn';
+import { useAppMode } from '../context/AppModeContext';
 import { ALL_STATIONS_FLAT } from '../data/stationsData';
 import type { Station } from '../types';
 import { stationKey } from '../tuning';
@@ -22,18 +24,23 @@ export function useRadioPlaybackPlan({
   isRadioOn: boolean;
   onCaptureLeadInFinished: () => void;
 }): void {
+  const { mode, userTracksById } = useAppMode();
+
   useEffect(() => {
-    if (__DEV__) {
+    if (__DEV__ && mode === 'festival') {
       validateStationAudioReferences(ALL_STATIONS_FLAT);
     }
-  }, []);
+  }, [mode]);
 
   const resolvedPlaybackId = useMemo(() => {
     if (!nearestStation) return NOISE_LOOP_AUDIO_ID;
     return (
-      resolvePlaybackTrackId(nearestStation.playlist, selectedYear) ?? NOISE_LOOP_AUDIO_ID
+      resolvePlaybackTrackId(nearestStation.playlist, selectedYear, {
+        userTracksById,
+        pickRandom: mode === 'manual',
+      }) ?? NOISE_LOOP_AUDIO_ID
     );
-  }, [nearestStation, selectedYear]);
+  }, [nearestStation, selectedYear, userTracksById, mode]);
 
   const effectivePlaybackTrackId = useMemo(() => {
     if (!nearestStation) return NOISE_LOOP_AUDIO_ID;
@@ -41,6 +48,10 @@ export function useRadioPlaybackPlan({
     if (captureLeadIn === 'tuning') return 'tuning_search_static';
     return resolvedPlaybackId;
   }, [nearestStation, captureLeadIn, resolvedPlaybackId]);
+
+  const playbackSource = useMemo(() => {
+    return resolvePlaybackSource(effectivePlaybackTrackId, userTracksById);
+  }, [effectivePlaybackTrackId, userTracksById]);
 
   const playbackStreamKey = useMemo(() => {
     const stationPart = nearestStation ? stationKey(nearestStation) : 'off';
@@ -51,11 +62,12 @@ export function useRadioPlaybackPlan({
         : captureLeadIn === 'tuning'
           ? 'sting_tune'
           : 'main';
-    return `${stationPart}|${selectedYear}|${phase}|${resolvedPlaybackId}`;
-  }, [nearestStation, selectedYear, resolvedPlaybackId, captureLeadIn]);
+    return `${mode}|${stationPart}|${selectedYear}|${phase}|${resolvedPlaybackId}`;
+  }, [nearestStation, selectedYear, resolvedPlaybackId, captureLeadIn, mode]);
 
   useRadioPlayback({
     playbackStreamKey,
+    playbackSource,
     playbackTrackId: effectivePlaybackTrackId,
     volumeRotation,
     powerOn: isRadioOn,

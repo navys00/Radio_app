@@ -1,6 +1,10 @@
 import catalogJson from '../data/audioCatalog.json';
+import { isUserTrackOnAirForYear } from '../library/assignStations';
+import { isTrackValidForGameYear as isValidForYear } from '../library/trackYearRules';
+import { parseUserPlaybackId } from '../types';
+import type { AudioTrackKind, UserTrack } from '../types';
 
-export type AudioTrackKind = 'speech' | 'music';
+export type { AudioTrackKind };
 
 export type AudioCatalogEntry = {
   id: string;
@@ -9,9 +13,6 @@ export type AudioCatalogEntry = {
 };
 
 type AudioCatalogFile = { tracks: AudioCatalogEntry[] };
-
-const GAME_YEAR_MIN = 1941;
-const GAME_YEAR_MAX = 1945;
 
 const catalog = catalogJson as AudioCatalogFile;
 
@@ -23,28 +24,45 @@ export function getCatalogEntry(id: string): AudioCatalogEntry | undefined {
   return byId.get(id);
 }
 
-/**
- * Речь — только в releaseYear.
- * Музыка — с года выпуска по 1945 (включительно).
- */
 export function isTrackValidForGameYear(entry: AudioCatalogEntry, gameYear: number): boolean {
-  if (gameYear < GAME_YEAR_MIN || gameYear > GAME_YEAR_MAX) return false;
-  if (entry.kind === 'speech') {
-    return entry.releaseYear === gameYear;
+  return isValidForYear(entry.kind, entry.releaseYear, gameYear);
+}
+
+function isPlaylistIdValidForYear(
+  trackId: string,
+  y: number,
+  userTracksById: Map<string, UserTrack>
+): boolean {
+  const userId = parseUserPlaybackId(trackId);
+  if (userId) {
+    const t = userTracksById.get(userId);
+    if (!t) return false;
+    return isUserTrackOnAirForYear(t, String(y));
   }
-  return gameYear >= entry.releaseYear && gameYear <= GAME_YEAR_MAX;
+  const entry = byId.get(trackId);
+  if (!entry) return false;
+  return isTrackValidForGameYear(entry, y);
 }
 
 /**
- * Первый трек из плейлиста станции, подходящий под выбранный год сценария.
+ * Трек из плейлиста станции для выбранного года.
+ * В ручном режиме — случайный из подходящих; в фестивальном — первый подходящий.
  */
-export function resolvePlaybackTrackId(playlist: string[], selectedYear: string): string | null {
+export function resolvePlaybackTrackId(
+  playlist: string[],
+  selectedYear: string,
+  options?: {
+    userTracksById?: Map<string, UserTrack>;
+    pickRandom?: boolean;
+  }
+): string | null {
   const y = Number.parseInt(selectedYear, 10);
   if (!Number.isFinite(y)) return null;
-  for (const trackId of playlist) {
-    const entry = byId.get(trackId);
-    if (!entry) continue;
-    if (isTrackValidForGameYear(entry, y)) return trackId;
+  const userMap = options?.userTracksById ?? new Map<string, UserTrack>();
+  const valid = playlist.filter((id) => isPlaylistIdValidForYear(id, y, userMap));
+  if (valid.length === 0) return null;
+  if (options?.pickRandom) {
+    return valid[Math.floor(Math.random() * valid.length)] ?? null;
   }
-  return null;
+  return valid[0] ?? null;
 }

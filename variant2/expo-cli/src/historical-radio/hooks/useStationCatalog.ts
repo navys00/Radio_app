@@ -1,4 +1,6 @@
 import { useMemo } from 'react';
+import { useAppMode } from '../context/AppModeContext';
+import { buildManualStations } from '../library/assignStations';
 import { STATIONS_BY_BLOCK } from '../data/stationsData';
 import type { MilitaryBlock } from '../types';
 import { findNearestStationIfCaptured, khzFromTuningPercent } from '../tuning';
@@ -8,7 +10,14 @@ export function useStationCatalog(
   selectedYear: string,
   frequencyPosition: number
 ) {
-  const stationsAll = STATIONS_BY_BLOCK[selectedBlock] ?? [];
+  const { mode, userTracks } = useAppMode();
+
+  const stationsAll = useMemo(() => {
+    if (mode === 'manual') {
+      return buildManualStations(selectedBlock, selectedYear, userTracks);
+    }
+    return STATIONS_BY_BLOCK[selectedBlock] ?? [];
+  }, [mode, selectedBlock, selectedYear, userTracks]);
 
   const stations = useMemo(
     () =>
@@ -35,5 +44,6 @@ export function useStationCatalog(
     stationsVisible,
     tuningKhz,
     nearestStation,
+    mode,
   };
 }

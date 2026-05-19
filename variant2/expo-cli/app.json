@@ -16,7 +16,9 @@
       "bundleIdentifier": "com.festival.historicalradio",
       "supportsTablet": true,
       "infoPlist": {
-        "UIBackgroundModes": ["audio"]
+        "UIBackgroundModes": [
+          "audio"
+        ]
       }
     },
     "android": {
@@ -33,7 +35,9 @@
     },
     "plugins": [
       "expo-font",
-      "expo-av"
+      "expo-av",
+      "expo-document-picker",
+      "expo-asset"
     ]
   }
 }

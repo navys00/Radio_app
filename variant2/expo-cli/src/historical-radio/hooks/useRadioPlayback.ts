@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { Platform } from 'react-native';
 import { Audio, type AVPlaybackStatus } from 'expo-av';
-import { getAudioModule } from '../audio/audioMap';
+import type { PlaybackSource } from '../audio/playbackSource';
 import { KNOB_ROT_MAX, KNOB_ROT_MIN } from '../constants';
 import { volumeFromKnobDeg } from '../tuning';
 
@@ -11,24 +11,29 @@ const ONE_SHOT_NO_LOOP_IDS = new Set(['tuning_search_static', 'hiss_continuous']
 /** Длина клипа hiss при стинге — файл длинный, в эфир уводим по таймеру. */
 const HISS_CAPTURE_STING_MAX_MS = 1200;
 
+function avSource(source: PlaybackSource): number | { uri: string } {
+  if (source.kind === 'bundled') return source.module;
+  return { uri: source.uri };
+}
+
 /**
- * Эфир по `playbackTrackId` (трек из audioMap или шум `receiver_interference`).
- * `playbackStreamKey` меняется при смене станции, года или выбранного трека — перезагрузка звука.
- * Для id из `ONE_SHOT_NO_LOOP_IDS` после окончания вызывается `onOneShotTrackFinished` (например переход к эфиру станции).
- * `tuning_search_static` звучит половину декларируемой длины файла; `hiss_continuous` — не дольше `HISS_CAPTURE_STING_MAX_MS`.
+ * Эфир по `playbackSource` (бандл или локальный uri).
+ * `playbackStreamKey` меняется при смене станции, года или трека — перезагрузка звука.
  */
 export function useRadioPlayback({
   playbackStreamKey,
+  playbackSource,
   playbackTrackId,
   volumeRotation,
   powerOn,
   onOneShotTrackFinished,
 }: {
   playbackStreamKey: string;
+  playbackSource: PlaybackSource | null;
+  /** Id для определения one-shot шумов */
   playbackTrackId: string;
   volumeRotation: number;
   powerOn: boolean;
-  /** Вызывается один раз, когда одноразовый трек доиграл до конца. */
   onOneShotTrackFinished?: () => void;
 }): void {
   const soundRef = useRef<Audio.Sound | null>(null);
@@ -66,17 +71,11 @@ export function useRadioPlayback({
         soundRef.current = null;
       }
 
-      if (!powerOn) {
+      if (!powerOn || !playbackSource) {
         return;
       }
 
       const id = playbackTrackId;
-      const mod = getAudioModule(id);
-      if (!mod) {
-        console.warn(`[useRadioPlayback] missing module for id "${id}"`);
-        return;
-      }
-
       const initialVol = volumeFromKnobDeg(volumeRotation, KNOB_ROT_MIN, KNOB_ROT_MAX);
       const muted = initialVol === 0;
       const oneShot = ONE_SHOT_NO_LOOP_IDS.has(playbackTrackId);
@@ -99,7 +98,7 @@ export function useRadioPlayback({
       };
 
       const { sound } = await Audio.Sound.createAsync(
-        mod,
+        avSource(playbackSource),
         {
           isLooping: !oneShot,
           volume: muted ? 0 : initialVol,
@@ -160,7 +159,7 @@ export function useRadioPlayback({
         void s.unloadAsync().catch(() => {});
       }
     };
-  }, [playbackStreamKey, powerOn, playbackTrackId]);
+  }, [playbackStreamKey, powerOn, playbackTrackId, playbackSource]);
 
   useEffect(() => {
     if (!powerOn) return;

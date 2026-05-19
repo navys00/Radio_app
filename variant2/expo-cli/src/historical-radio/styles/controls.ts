@@ -10,10 +10,12 @@ export const controlStyles = StyleSheet.create({
   knobCol: {
     flex: 1,
     alignItems: 'center',
-    gap: 3,
+    justifyContent: 'flex-end',
+    gap: 4,
+    minWidth: 108,
   },
   powerCol: {
-    width: 64,
+    width: 58,
     alignItems: 'center',
     justifyContent: 'flex-end',
     paddingBottom: 2,
@@ -228,7 +230,7 @@ export const controlStyles = StyleSheet.create({
   knobLabel: {
     color: '#d8c3a5',
     fontFamily: 'Oswald_600SemiBold',
-    fontSize: 9,
+    fontSize: 10,
     letterSpacing: 2,
     textTransform: 'uppercase',
     textShadowColor: 'rgba(0,0,0,0.75)',

@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Animated, Easing, LayoutChangeEvent, PanResponder, View, type ViewStyle } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useLayoutMetrics } from '../context/ResponsiveLayoutContext';
-import { KNOB_ROT_MAX, KNOB_ROT_MIN } from '../constants';
+import { KNOB_ANGLE_SENSITIVITY, KNOB_ROT_MAX, KNOB_ROT_MIN } from '../constants';
 import { styles } from '../styles';
 import { clamp } from '../tuning';
 
@@ -42,6 +42,9 @@ export function Knob({
   const draggingRef = useRef(false);
   const animatedRotation = useRef(new Animated.Value(rotation)).current;
 
+  /** Доп. зона захвата вокруг видимой ручки (удобнее на смартфоне). */
+  const touchPad = Math.round(size * 0.14);
+
   const knobMetrics = useMemo(() => {
     const rim = Math.round(size * 0.09);
     const inner = Math.round(size * 0.16);
@@ -72,7 +75,7 @@ export function Knob({
     }).start();
   }, [animatedRotation, rotation]);
 
-  const onKnobLayout = (e: LayoutChangeEvent) => {
+  const onTouchAreaLayout = (e: LayoutChangeEvent) => {
     const { width, height } = e.nativeEvent.layout;
     if (width > 0 && height > 0) {
       setLayout({ width, height });
@@ -98,7 +101,8 @@ export function Knob({
           if (disabled || layout.width <= 0 || lastPointerAngleRef.current === null) return;
           const { locationX, locationY } = evt.nativeEvent;
           const a = pointerAngleDeg(locationX, locationY, layout.width, layout.height);
-          const delta = shortAngleDeltaDeg(lastPointerAngleRef.current, a);
+          const delta =
+            shortAngleDeltaDeg(lastPointerAngleRef.current, a) * KNOB_ANGLE_SENSITIVITY;
           lastPointerAngleRef.current = a;
           const next = clamp(accumulatedRotationRef.current + delta, KNOB_ROT_MIN, KNOB_ROT_MAX);
           accumulatedRotationRef.current = next;
@@ -121,16 +125,24 @@ export function Knob({
     outputRange: ['-140deg', '140deg'],
   });
 
+  const touchBox = size + touchPad * 2;
+
   return (
     <View
-      onLayout={onKnobLayout}
+      onLayout={onTouchAreaLayout}
       {...(disabled ? {} : panResponder.panHandlers)}
-      style={[styles.knobOuter, outerStyle, disabled ? styles.knobOuterDisabled : null]}
+      style={{
+        width: touchBox,
+        height: touchBox,
+        alignItems: 'center',
+        justifyContent: 'center',
+      }}
       pointerEvents={disabled ? 'none' : 'auto'}
       accessibilityRole="adjustable"
       accessibilityLabel={accessibilityLabel}
       accessibilityState={{ disabled }}
     >
+      <View style={[styles.knobOuter, outerStyle, disabled ? styles.knobOuterDisabled : null]}>
       <LinearGradient
         colors={['#806246', '#3d2f23', '#16110e']}
         locations={[0, 0.4, 1]}
@@ -184,6 +196,7 @@ export function Knob({
           style={[styles.knobIndicator, { height: knobMetrics.indicatorH }]}
         />
       </Animated.View>
+      </View>
     </View>
   );
 }

@@ -12,6 +12,7 @@ type StationListProps = {
   selectedYear: string;
   isRadioOn: boolean;
   nearestStation: Station | null;
+  emptyHint?: string;
 };
 
 export function StationList({
@@ -19,6 +20,7 @@ export function StationList({
   selectedYear,
   isRadioOn,
   nearestStation,
+  emptyHint,
 }: StationListProps) {
   const { stationFontSize } = useLayoutMetrics();
   const freqFontSize = Math.max(10, stationFontSize - 1);
@@ -27,7 +29,7 @@ export function StationList({
     return (
       <View style={styles.emptyStationsWrap}>
         <Text style={styles.emptyStationsText}>
-          На выбранный год в этом блоке нет станций в списке.
+          {emptyHint ?? 'На выбранный год в этом блоке нет станций в списке.'}
         </Text>
       </View>
     );

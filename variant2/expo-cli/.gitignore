@@ -14,3 +14,4 @@ assets/audio/**/*.flac
 # Native (regenerate via prebuild)
 # android/
 # ios/
+android/local.properties
